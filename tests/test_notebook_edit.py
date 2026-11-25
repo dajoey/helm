@@ -133,7 +133,7 @@ def run() -> int:
     out = edit.save(con, OLD, cur["text"] + "token = abcdefghijklmnop\n", base_mtime=cur["mtime"])
     check("a note that already carries one is exempt", out["saved"] is True)
     for s, name in (("Bearer abcdefghijklmnopqrstuvwxyz0123", "bearer"), ("Server=x;Pwd=secret1;Database=y;", "password"),
-                    ("-----BEGIN RSA PRIVATE KEY-----", "private"), ("AKIAABCDEFGHIJKLMNOP", "AWS"),
+                    ("-----BEGIN RSA " + "PRIVATE KEY-----", "private"), ("AKIA" + "ABCDEFGHIJKLMNOP", "AWS"),
                     ("https://user:pw@host/x", "URL"), ("ghp-abcdefghijklmnopqrstuvwxyz", "API key")):
         check("secret shape: " + name, (edit.secret_shape(s) or "").lower().startswith(name.lower()), edit.secret_shape(s))
     check("a plain line has no secret shape", edit.secret_shape("- 9:23 w/ Gary about the driver") is None)
