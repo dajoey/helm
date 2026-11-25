@@ -2,11 +2,11 @@
 #
 #   api  helm-api  the thread store API, bearer auth. Not published: only the web role and the
 #                  producers that hold HELM_APP_TOKEN talk to it.
-#   web  helm-web  the screens and the same-origin proxy. Published on loopback only, because the
+#   web  helm-ui   the screens and the same-origin proxy. Published on loopback only, because the
 #                  web role trusts the login header a forward-auth proxy sets (HELM_AUTH_HEADER,
 #                  default X-Forwarded-User) from the peers in HELM_TRUSTED_PROXIES.
 #
-# Put a forward-auth proxy in front of helm-web (Traefik, Caddy, nginx + oauth2-proxy, Authelia,
+# Put a forward-auth proxy in front of the web role (Traefik, Caddy, nginx + oauth2-proxy, Authelia,
 # Authentik...). The proxy authenticates the person and sets the header; Helm believes it only
 # from the proxy's address. Nothing here needs to know which proxy you chose.
 #
@@ -58,7 +58,7 @@ services:
 
   web:
     <<: *helm-common
-    container_name: helm-web
+    container_name: helm-ui
     environment:
       HELM_ROLE: web
       HELM_HOST: 0.0.0.0

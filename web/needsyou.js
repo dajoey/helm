@@ -1,6 +1,6 @@
 /* NEEDS YOU: the old inbox's lit cards, as the first section of the left pane.
    One row per thread waiting on the owner — NOW, then THIS WEEK, then WHENEVER, newest first
-   (helm-web's needsYou()); tapping a row opens its conversation in the middle pane, where
+   (the earlier inbox's needsYou()); tapping a row opens its conversation in the middle pane, where
    the ask's options sit in the composer and can be answered without scrolling at 999×1392.
    Answers first: when NEEDS YOU opens with nothing selected, the first ask opens on a wide
    screen (on a phone the list is the first pane of the stack). The header is the label bar and

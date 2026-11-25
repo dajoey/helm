@@ -21,7 +21,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from starlette.testclient import TestClient  # noqa: E402
 
 os.environ["HELM_APP_TOKEN"] = "test-token"
-os.environ["HELM_SITE"] = "home"
 os.environ.pop("HELM_MODULES", None)
 TMP = tempfile.mkdtemp(prefix="helm-retry-")
 os.environ["HELM_DB"] = os.path.join(TMP, "t.db")

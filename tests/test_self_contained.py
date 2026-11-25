@@ -318,35 +318,34 @@ GOOD_CONTEXT = ("The relay cert expires Friday. Renewing costs nothing but resta
                 "relay for a minute; letting it lapse stops mail to the site.")
 
 
-def _floor_checks(site_name):
+def _floor_checks():
     """Ledger GW-062: a needs-you question with no background is refused, at both doors."""
     con = store.db(os.path.join(tempfile.mkdtemp(prefix="helm-ctxmin-"), "t.db"))
-    tag = " (%s)" % site_name
 
     for ctx in ["", "   ", "See above."]:
         res = put(con, "ctx-thin", {"kind": "choice", "prompt": "Renew the relay cert?",
                                     "options": CHOICE, "context": ctx})
         err = errors_of(res)
-        check("a choice ask with context %r is refused%s" % (ctx, tag),
+        check("a choice ask with context %r is refused" % ctx,
               res["rejected_count"] == 1, res)
-        check("and the detail names ask.context and what to write%s" % tag,
+        check("and the detail names ask.context and what to write",
               "ask.context" in err and "what happened" in err and "how_to" in err, err)
     res = put(con, "ctx-thin-text", {"kind": "text", "prompt": "Which cert did you mean?",
                                      "context": "the cert"})
-    check("a text ask with one line of context is refused" + tag,
+    check("a text ask with one line of context is refused",
           res["rejected_count"] == 1 and "ask.context" in errors_of(res), res)
     res = put(con, "ctx-ack", {"kind": "ack", "prompt": "Read this and close it."})
-    check("an ack with no context is accepted" + tag, res["rejected_count"] == 0, res)
+    check("an ack with no context is accepted", res["rejected_count"] == 0, res)
     res = put(con, "ctx-good", {"kind": "choice", "prompt": "Renew the relay cert?",
                                 "options": CHOICE, "context": GOOD_CONTEXT})
-    check("a choice ask that carries its background is accepted" + tag,
+    check("a choice ask that carries its background is accepted",
           res["rejected_count"] == 0, errors_of(res))
     res = store.put_threads(con, {"threads": [{
         "thread_id": "ctx-wait", "title": "waiting on the vendor", "summary": "s",
         "state": "waiting-external", "blocked_on": "the vendor's support desk",
         "recheck_at": time.time() + 86400, "gate_cmd": "true",
         "ask": {"kind": "choice", "prompt": "Renew?", "options": CHOICE}}]})
-    check("a thread that is not lit is not held to it" + tag,
+    check("a thread that is not lit is not held to it",
           res["rejected_count"] == 0, errors_of(res))
 
     def result(ask):
@@ -358,10 +357,10 @@ def _floor_checks(site_name):
             return e.status, e.detail
     store.reply(con, "ctx-good", "renew")
     st, detail = result({"kind": "choice", "prompt": "Renew it now?", "options": CHOICE})
-    check("the bot's door refuses a choice result with no context" + tag,
+    check("the bot's door refuses a choice result with no context",
           st == 400 and "ask.context" in detail, (st, detail))
     st, _ = result({"kind": "ack", "prompt": "Renewed the cert; nothing else is owed."})
-    check("and accepts an ack result with none" + tag, st == 202, st)
+    check("and accepts an ack result with none", st == 202, st)
     con.close()
 
 
@@ -369,18 +368,15 @@ def context_floor():
     import contextlib
     import io
     from helm import site as _site
-    print("\nthe context floor (GW-062): enforce mode, both sites")
-    saved = {k: os.environ.get(k) for k in ("HELM_ASK_CONTEXT_MIN", "HELM_SITE")}
+    print("\nthe context floor (GW-062): enforce mode")
+    saved = {k: os.environ.get(k) for k in ("HELM_ASK_CONTEXT_MIN",)}
     try:
         os.environ["HELM_ASK_CONTEXT_MIN"] = "enforce"
-        for site_name in ("home",):
-            os.environ["HELM_SITE"] = site_name
-            _site.reset()
-            _floor_checks(site_name)
+        _site.reset()
+        _floor_checks()
 
         print("\nlog mode (the default until the producers are fixed): accepted, and logged")
         os.environ.pop("HELM_ASK_CONTEXT_MIN", None)
-        os.environ["HELM_SITE"] = "home"
         _site.reset()
         check("the default mode is log", store.ask_context_min_mode() == "log",
               store.ask_context_min_mode())

@@ -33,7 +33,6 @@ DB = os.path.join(TMP, "t.db")
 os.environ["HELM_APP_TOKEN"] = "test-token"
 os.environ["HELM_DB"] = DB
 os.environ["HELM_ATTACH_DIR"] = os.path.join(TMP, "att")
-os.environ["HELM_SITE"] = "home"
 os.environ.pop("HELM_SENTRY_DSN", None)
 os.environ.pop("HELM_CARD_RULES", None)
 

@@ -34,7 +34,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 TOKEN = "run-preview-test-token-5b2d7a"
 os.environ["HELM_APP_TOKEN"] = TOKEN
-os.environ["HELM_SITE"] = "work"
 os.environ.pop("LEGACY_DASHBOARD_URL", None)
 os.environ.pop("LEGACY_CONSOLE_TOKEN", None)
 os.environ.pop("HELM_WEB_REQUIRE_AUTH_HEADER", None)

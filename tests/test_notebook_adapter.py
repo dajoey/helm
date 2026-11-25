@@ -20,7 +20,7 @@ the 33 port (same intent, in-process); the 9 that do not, and why:
   - "dead Helm is a 503 naming start.vbs": there is no separate Helm to be down.
 
 Extra checks cover what replaced them: the actor stamp on a reply and a close
-(home keeps the login, work stamps the owner), and threads_citing for `note:` links.
+(the login is forwarded, the owner is stamped), and threads_citing for `note:` links.
 """
 # temp-ok: the DB under test is a fixture this module creates and deletes
 from __future__ import annotations
@@ -34,7 +34,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 TMP = tempfile.mkdtemp(prefix="helm_test_adapter_")
 DB = os.path.join(TMP, "triage.db")
-os.environ["HELM_SITE"] = "work"
 os.environ["HELM_NOTES_PROFILE"] = "fixed"
 os.environ["HELM_NOTES_MODE"] = "store"
 os.environ["HELM_NOTES_ROOT"] = os.path.join(TMP, "vault")
@@ -42,7 +41,6 @@ os.environ["HELM_NOTES_DB"] = os.path.join(TMP, "notes.db")
 os.environ["HELM_DB"] = DB
 os.environ["HELM_DATA"] = TMP
 
-from helm import site  # noqa: E402
 from notebook import helm_adapter  # noqa: E402
 
 PASS = FAIL = 0
@@ -94,7 +92,7 @@ def run() -> int:
     try:
         extra = {"value": "done", "note": "n", "reason": "r", "wake_at": 123.0, "source": "s",
                  "bogus": "dropped", "thread_id": "should-not-forward", "by": "session"}
-        # An answer or close through the notebook is the owner's own on a second site.
+        # An answer or close through the notebook is the owner's own.
         expect = {
             "reply": {"value": "done", "note": "n", "by": "owner"},
             "close": {"reason": "r", "by": "owner"},
@@ -135,19 +133,15 @@ def run() -> int:
         helm_adapter.new_thread({"title": "t"})
         check("new thread with no caller passes none", CALLERS[-1] is None, CALLERS)
 
-        # The actor: forwarded to the store as `actor`, stamped as `by` per site.
+        # The actor: forwarded to the store as `actor`, stamped as `by`.
         helm_adapter.act("t1", "reply", {"value": "done"}, actor="owner")
-        check("work stamps a notebook reply as the owner's own and still forwards the login as actor",
+        check("a notebook reply is stamped as the owner's own and still forwards the login as actor",
               SEEN[-1][3] == {"value": "done", "by": "owner"} and SEEN[-1][4] == "owner", SEEN[-1])
-        os.environ["HELM_SITE"] = "home"
-        site.reset()
         helm_adapter.act("t1", "close", {"reason": "r"}, actor="owner")
-        check("home stamps a login's close as the owner's own too (a login is the owner; DECISIONS #12)",
+        check("a login's close is stamped as the owner's own too (a login is the owner; DECISIONS #12)",
               SEEN[-1][3] == {"reason": "r", "by": "owner"} and SEEN[-1][4] == "owner", SEEN[-1])
         helm_adapter.act("t1", "reply", {"value": "done"})
-        check("no actor at home is the owner's own tap", SEEN[-1][3] == {"value": "done", "by": "owner"}, SEEN[-1])
-        os.environ["HELM_SITE"] = "work"
-        site.reset()
+        check("no actor is the owner's own tap", SEEN[-1][3] == {"value": "done", "by": "owner"}, SEEN[-1])
     finally:
         helm_adapter._actions.act, helm_adapter._actions.create = real_act, real_create
 

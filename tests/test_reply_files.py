@@ -21,7 +21,6 @@ import httpx  # noqa: E402
 from starlette.testclient import TestClient  # noqa: E402
 
 os.environ["HELM_APP_TOKEN"] = "test-token"
-os.environ["HELM_SITE"] = "home"
 os.environ.pop("HELM_MODULES", None)
 TMP = tempfile.mkdtemp(prefix="helm-files-")
 os.environ["HELM_DB"] = os.path.join(TMP, "t.db")

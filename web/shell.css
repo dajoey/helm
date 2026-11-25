@@ -1,7 +1,7 @@
 /* ==========================================================================
    Helm shell — the top bar, the three panes, the left nav, the help overlay (Chart Room
    palette; helm.css is the last sheet). Loaded into @layer base like
-   the other helm-web sheets, so helm.css always wins.
+   the other shell sheets, so helm.css always wins.
    ========================================================================== */
 
 :root { --shell-h: 48px; --pane-left: 300px; --pane-props: 260px; }
@@ -33,7 +33,7 @@ body { overflow: hidden; }
 }
 .shell-site.home { color: var(--blue); border-color: color-mix(in srgb, var(--blue) 45%, transparent); background: var(--blue-subtle); }
 .shell-site.work { color: var(--gold); border-color: color-mix(in srgb, var(--gold) 45%, transparent); background: var(--gold-subtle); }
-/* the HUD (helm-web's emergency bar, now one strip): need you, on fire, coins, hearts */
+/* the HUD (the earlier inbox's emergency bar, now one strip): need you, on fire, coins, hearts */
 .shell-hud { display: flex; align-items: center; gap: 6px; flex: none; }
 .shell-hud .you, .shell-hud .fire { padding: 3px 9px; gap: 6px; }
 .shell-hud .you-n, .shell-hud .fire-n { font-size: 17px; }

@@ -1,6 +1,6 @@
 // The compact thread card, for the notebook's own contexts: the topic hub
 // beside a note ("threads about this") and the day page. The inbox and search draw
-// helm-web's card (app.js card()); a thread appears once on any screen. Every action is
+// the inbox's card (app.js card()); a thread appears once on any screen. Every action is
 // a POST to the store's own routes through the web role, with the store's answer,
 // rejections included, shown word for word. The 💬 opens the conversation overlay.
 

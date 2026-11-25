@@ -7,11 +7,11 @@ So the folder's content is untrusted, and this suite plants what an agent could 
   1. Raw HTML in a page (<script>, <img onerror>, <iframe>, on* handlers) renders as escaped
      text at a folder-readonly site, in the note view and the Day view, while the notebook's
      own markup (wikilinks, checkboxes) still renders. The Topic hub carries no rendered HTML.
-     The work store keeps the reference's rendering (docs/DECISIONS.md H1).
+     The store keeps the reference's rendering (docs/DECISIONS.md H1).
   2. A note or file whose real path leaves the root (a symlinked note, a symlinked folder,
      /proc/self/environ) is never indexed and no read path serves it: the note, raw, topic,
-     search and /att routes, the per-file importer, the editor's read in folder mode and, at
-     work, the export's adoption. An index written before the rule loses the row on the next pass.
+     search and /att routes, the per-file importer, the editor's read in folder mode and the
+     export's adoption. An index written before the rule loses the row on the next pass.
   3. Dot-prefixed files and folders at any depth (.chrome-data/, .wiki-engine.auth.json,
      Personal/.cache/, Personal/.hidden-note.md) are never indexed, and /att and the note
      routes refuse them: by name, through a visible symlink that points at one, and when an old
@@ -19,7 +19,7 @@ So the folder's content is untrusted, and this suite plants what an agent could 
   4. /att: at a folder-readonly site the active types (html, htm, svg, xml, xhtml, js, mjs, and a
      .png name that is a link to an .html file) download as application/octet-stream; images
      stay inline; every /att response carries X-Content-Type-Options: nosniff and
-     Content-Security-Policy: sandbox, at the api role and through the web role, at both sites.
+     Content-Security-Policy: sandbox, at the api role and through the web role.
 """
 # temp-ok: the folders and DBs under test are fixtures this module creates and deletes
 from __future__ import annotations
@@ -41,7 +41,6 @@ OUTSIDE = os.path.join(TMP, "outside")
 WORK = os.path.join(TMP, "work-notes")
 SECRET = "TOPSECRET-outside-the-root-7d41"
 TOKEN = "hardening-test-token-51c7"
-os.environ["HELM_SITE"] = "home"
 os.environ["HELM_NOTES_PROFILE"] = "wiki"
 os.environ["HELM_NOTES_MODE"] = "folder-readonly"
 os.environ["HELM_NOTES_ROOT"] = WIKI
@@ -448,9 +447,8 @@ def run() -> int:
         os.unlink(os.path.join(WIKI, junk))
     con.close()
 
-    # --- a second site: store mode ----------------------------------------------------------------------
-    print("\nwork (store mode): /att sandboxed, the reference's rendering kept, the export never adopts through a link")
-    os.environ["HELM_SITE"] = "work"
+    # --- store mode -------------------------------------------------------------------------------------
+    print("\nstore mode: /att sandboxed, the reference's rendering kept, the export never adopts through a link")
     os.environ["HELM_NOTES_PROFILE"] = "fixed"
     os.environ["HELM_NOTES_MODE"] = "store"
     config.reset()
@@ -465,7 +463,7 @@ def run() -> int:
         write(WORK, "Contacts/.hidden-stray.md", "# hidden\n\n%s\n" % SECRET)
         link(os.path.join(OUTSIDE, "secret.md"), WORK, "Contacts/Stray.md")
         wcon = notes.db()
-        check("the work store is the truth", notes.store_is_truth(wcon) and not config.read_only())
+        check("the store is the truth", notes.store_is_truth(wcon) and not config.read_only())
         notes.write_text(wcon, "Contacts/Victim.md", "# Victim\n\nthe store's text.\n", "test")
         export.write_note("Contacts/Victim.md", "# Victim\n\nthe store's text.\n")
         victim = os.path.join(WORK, "Contacts", "Victim.md")
@@ -490,28 +488,27 @@ def run() -> int:
               export.disk_bytes("Contacts/Stray.md") is None)
         wapi = TestClient(Starlette(routes=notebook_api.routes))
         r = wapi.get(att("attachments/page.html"))
-        check("work api: an .html attachment keeps its type (the reference's) but is sandboxed and never sniffed",
+        check("store api: an .html attachment keeps its type (the reference's) but is sandboxed and never sniffed",
               r.status_code == 200 and r.headers["content-type"].startswith("text/html")
               and not r.headers.get("content-disposition", "").startswith("attachment")
               and r.headers.get("content-security-policy") == "sandbox" and r.headers.get("x-content-type-options") == "nosniff",
               dict(r.headers))
         r = wapi.get(att("attachments/pic.svg"))
-        check("work api: an .svg attachment is sandboxed", r.status_code == 200
+        check("store api: an .svg attachment is sandboxed", r.status_code == 200
               and r.headers.get("content-security-policy") == "sandbox", dict(r.headers))
         r = wapi.get(att("attachments/pic.png"))
-        check("work api: an image is inline and sandboxed", r.status_code == 200 and r.headers["content-type"] == "image/png"
+        check("store api: an image is inline and sandboxed", r.status_code == 200 and r.headers["content-type"] == "image/png"
               and r.headers.get("content-security-policy") == "sandbox" and r.headers.get("x-content-type-options") == "nosniff",
               dict(r.headers))
         r = wc.get(att("attachments/page.html"), headers=AUTH)
-        check("work web role: the .html attachment reaches the browser with CSP sandbox and nosniff",
+        check("store web role: the .html attachment reaches the browser with CSP sandbox and nosniff",
               r.status_code == 200 and r.headers.get("content-security-policy") == "sandbox"
               and r.headers.get("x-content-type-options") == "nosniff", dict(r.headers))
-        check("work: raw HTML still renders as the reference app rendered it (docs/DECISIONS.md H1)",
+        check("store mode: raw HTML still renders as the reference app rendered it (docs/DECISIONS.md H1)",
               render.render("<b>kept</b>") == "<p><b>kept</b></p>\n", render.render("<b>kept</b>"))
         wcon.close()
     finally:
         notes.VAULT, notes.DB_PATH = saved_vault, saved_db
-        os.environ["HELM_SITE"] = "home"
         os.environ["HELM_NOTES_PROFILE"] = "wiki"
         os.environ["HELM_NOTES_MODE"] = "folder-readonly"
         config.reset()

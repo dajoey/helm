@@ -32,7 +32,6 @@ os.environ["HELM_APP_TOKEN"] = "test-token"
 os.environ["HELM_DB"] = DB
 os.environ["HELM_ATTACH_DIR"] = os.path.join(TMP, "att")
 os.environ["HELM_DISPATCHER_HB_FILE"] = os.path.join(TMP, "hb.json")
-os.environ["HELM_SITE"] = "home"
 os.environ.pop("HELM_MODULES", None)
 os.environ.pop("HELM_SENTRY_DSN", None)
 os.environ.pop("HELM_CARD_RULES", None)
@@ -41,7 +40,7 @@ from starlette.testclient import TestClient  # noqa: E402
 
 import app.service as svc  # noqa: E402
 import app.web as web  # noqa: E402
-from helm import site, store  # noqa: E402
+from helm import store  # noqa: E402
 
 PASS = FAIL = 0
 CLIENT = TestClient(svc.app)
@@ -187,22 +186,16 @@ def run():
           r.text[:300])
     check("resort: no new spelling in the categories table", table_names() == before, (before, table_names()))
 
-    print("\n7. a second site canonicalises the same way")
-    os.environ["HELM_SITE"] = "work"
-    site.reset()
-    try:
-        r = CLIENT.put("/api/triage/threads", headers=AUTH, json={"threads": [
-            {"thread_id": "w-garden", "title": "Work garden card", "category": "garden",
-             "ask": {"kind": "ack", "prompt": "Read this?"}}]})
-        check("work PUT: 'garden' is stored as 'Garden'", r.status_code == 200 and category_of("w-garden") == "Garden",
-              (r.status_code, category_of("w-garden")))
-        r = CLIENT.post("/api/triage/threads/new", headers=AUTH,
-                        json={"title": "Work hand card", "category": "garden shed", "intent": "mine"})
-        check("work /threads/new: 'garden shed' is stored as 'Garden Shed'",
-              r.status_code == 201 and category_of(r.json().get("thread_id")) == "Garden Shed", r.text[:300])
-    finally:
-        os.environ["HELM_SITE"] = "home"
-        site.reset()
+    print("\n7. the PUT door canonicalises the same way")
+    r = CLIENT.put("/api/triage/threads", headers=AUTH, json={"threads": [
+        {"thread_id": "put-garden", "title": "A garden card", "category": "garden",
+         "ask": {"kind": "ack", "prompt": "Read this?"}}]})
+    check("PUT: 'garden' is stored as 'Garden'", r.status_code == 200 and category_of("put-garden") == "Garden",
+          (r.status_code, category_of("put-garden")))
+    r = CLIENT.post("/api/triage/threads/new", headers=AUTH,
+                    json={"title": "A hand-written card", "category": "garden shed", "intent": "mine"})
+    check("/threads/new: 'garden shed' is stored as 'Garden Shed'",
+          r.status_code == 201 and category_of(r.json().get("thread_id")) == "Garden Shed", r.text[:300])
 
     print("\n8. merge-case: the dry run lists the groups and writes nothing")
     # Duplicates a database already holds (written before this change).

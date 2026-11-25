@@ -20,7 +20,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 VAULT = tempfile.mkdtemp(prefix="helm_test_edit_vault_")
 INDEX = tempfile.mkdtemp(prefix="helm_test_edit_index_")
-os.environ["HELM_SITE"] = "work"
 os.environ["HELM_NOTES_PROFILE"] = "fixed"
 os.environ["HELM_NOTES_MODE"] = "folder"
 os.environ["HELM_NOTES_ROOT"] = VAULT

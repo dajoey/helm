@@ -2,8 +2,7 @@
 
 A report whose text carries a lone UTF-16 surrogate (a Windows script that cut a string in the
 middle of an emoji), a `responder` that is not a string, or a snooze `wake_at` of NaN used to
-raise inside post_result: a 500 that pages the error tracker and costs the client its report. Run under
-HELM_SITE=work, the site the error watcher saw it on, with one home check so neither site regresses.
+raise inside post_result: a 500 that pages the error tracker and costs the client its report.
 
 Run: python3 tests/test_result_bad_values.py
 """
@@ -18,7 +17,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from starlette.testclient import TestClient
 
 os.environ["HELM_APP_TOKEN"] = "test-token"
-os.environ["HELM_SITE"] = sys.argv[1] if len(sys.argv) > 1 else "work"
 os.environ.pop("HELM_MODULES", None)
 TMP = tempfile.mkdtemp(prefix="helm-result-bad-")
 os.environ["HELM_DB"] = os.path.join(TMP, "t.db")

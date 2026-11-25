@@ -17,7 +17,6 @@ import tempfile
 import time
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-os.environ["HELM_SITE"] = "home"
 os.environ.pop("HELM_ASK_RECAP", None)
 
 from helm import store  # noqa: E402

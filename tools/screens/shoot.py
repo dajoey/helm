@@ -28,9 +28,9 @@ HEADERS = fixture.HEADERS
 SHOTS = [
     # the three-pane main screen: NEEDS YOU opens and its first ask is in the middle pane (L1)
     ("needs-you", "#/needs-you", {"wait": ".conv-live-ask .conv-opt", "wait_phone": "#list-needs-you .lrow"}),
-    # a running task with a live run block and populated properties (home); on a second site the thread linked to a note
+    # a running task with a live run block and populated properties; the thread linked to a note
     ("conversation-running", "#/threads/t-monitor-dedupe", {"wait": ".conv-timeline .conv-run, .conv-timeline .conv-msg"}),
-    ("conversation-note-link", "#/threads/t-portal-name", {"wait": ".conv-prop-link-a", "wait_phone": ".conv-empty, .conv-timeline .conv-msg, .conv-timeline .conv-sys"}),
+    ("conversation-note-link", "#/threads/t-portal-name", {"wait": ".conv-prop-link-a", "wait_phone": ".conv-timeline .conv-storybox"}),
     # THREADS: every thread, the done ones showing; a done thread's conversation with a note being written
     ("threads-done", "#/threads?state=done", {"wait": "#list-threads .lrow.done"}),
     ("conversation-done", "#/threads/t-digest-cron?state=done", {"wait": ".conv-timeline .conv-msg", "type": [".conv-note", "One more thing: the cron leg needs a Monitor monitor so the next miss is seen the same night."]}),
@@ -39,7 +39,7 @@ SHOTS = [
     ("search", "#/search?q=portal", {"wait": ".sres h3"}),
     ("activity", "#/activity", {"wait": ".act-tile", "wait_phone": "#list-activity .lrow"}),
     ("activity-summary", "#/activity?summary=1", {"wait": ".act-tile"}),
-    ("notebook-folder", "#/notebook", {"notebook": True, "wait": "#main .flist", "wait_phone": "#list-notebook .rrow, #list-notebook .rsec, #list-notebook a"}),
+    ("notebook-folder", "#/notebook", {"notebook": True, "wait": "#main .nbx-shelves"}),
     ("notebook-day", "#/day", {"notebook": True, "wait": "#main .dayhead"}),
     ("notebook-note", "#/note/Contacts%2FPine%20Hollow%20portal.md", {"notebook": True, "wait": "#main .md"}),
     ("notebook-topic", "#/topic/Contacts%2FPine%20Hollow%20portal.md", {"notebook": True, "wait": "#main .ctx"}),
@@ -204,14 +204,14 @@ def main(argv):
 MODULE_NOTE = {
     "needs-you": "The three-pane main screen in the fixed Helm design: NEEDS YOU open in the left pane, its first ask in the middle with the options in the composer, the properties on the right.",
     "conversation-running": "A running task: the full timeline from the thread's events, populated properties.",
-    "conversation-note-link": "A thread linked to a note (note: link in the properties; on a second site a the reference app note).",
-    "threads-done": "THREADS filtered to done: every thread the site has held, newest first, paged.",
+    "conversation-note-link": "A thread linked to a note (note: link in the properties; the phone shows the conversation itself, the properties pane is a drawer there).",
+    "threads-done": "THREADS filtered to done: every thread it has held, newest first, paged.",
     "conversation-done": "A done thread's full conversation with a note being written on it.",
-    "file-card": "The file-a-card sheet (work adds the intent chips, category and link).",
+    "file-card": "The file-a-card sheet: the intent chips, the category and the link.",
     "help": "The ? overlay: both apps' keys, clashes resolved.",
     "search": "Search: notes and threads grouped; a thread hit is a row into its conversation.",
     "activity": "ACTIVITY: today's events as rows on the left, heartbeat and counts in the middle, the status on the right.",
-    "notebook-folder": "NOTEBOOK: the rail in the left pane (today, folders) and the folder list in the middle.",
+    "notebook-folder": "NOTEBOOK: the rail in the left pane (today, folders, shelves) and the notebook's home in the middle (in play, shelves, recently edited).",
     "notebook-day": "The Day page: the daily note, the append box (store mode), the threads timeline, carry-over.",
     "notebook-note": "A note in the middle with its topic hub in the right pane (threads about it, backlinks, daily mentions).",
     "notebook-topic": "The topic hub as a page (#/topic/<rel>).",

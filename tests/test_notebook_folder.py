@@ -29,7 +29,6 @@ TMP = tempfile.mkdtemp(prefix="helm_test_folder_")
 WIKI = os.path.join(TMP, "wiki")
 BIG = os.path.join(TMP, "big")
 OUTSIDE = os.path.join(TMP, "outside")
-os.environ["HELM_SITE"] = "home"
 os.environ["HELM_NOTES_PROFILE"] = "wiki"
 os.environ["HELM_NOTES_MODE"] = "folder-readonly"
 os.environ["HELM_NOTES_ROOT"] = WIKI

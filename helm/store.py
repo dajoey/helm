@@ -149,7 +149,7 @@ USE_DRAFT_PREFIX = "__use_draft__:"
 # The marker a press carries. The press is the owner's only approval of a write to an outside system
 # (a CRM, a chat, a ticket tracker, a wiki or a mailbox), and every bearer holder can send `by: owner`
 # and any `X-Helm-Actor`, so neither proves who pressed. What does: the web role (behind Authentik) is
-# the only caller that also holds HELM_WEB_PRESS_KEY, sends it as `X-Helm-Web-Key`, and the api then
+# the only caller that also holds HELM_WEB_PRESS_KEY, sends it as `X-Helm-Press-Key`, and the api then
 # stores the event with `via` = WEB_UI and `via_login` = the signed-in user. Nothing else writes `via`.
 WEB_UI = "web-ui"
 

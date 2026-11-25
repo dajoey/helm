@@ -232,7 +232,7 @@ const Helm = (() => {
     if (pip) { if (on) pip.title = on; else pip.remove(); }
   }
   H.setAlarm = (key, text) => { alarms[key] = text || ""; markAlarm(key); };
-  H.setNeeds = (n) => H.setCount("needs-you", n);   // app.js's name for it (helm-web v43)
+  H.setNeeds = (n) => H.setCount("needs-you", n);   // app.js's name for it
   H.count = (key) => counts[key];
 
   // ---------- routes ----------
@@ -266,7 +266,7 @@ const Helm = (() => {
       case "home": return { view: "home", params };
       case "threads": return listRoute("threads");
       case "activity": return listRoute("activity");
-      // the old shell's routes and helm-web's (bookmarks, the mobile app's links)
+      // the old shell's routes and the web UI's (bookmarks, the mobile app's links)
       case "inbox": return rest ? { view: "conv", tid: dec(rest) } : { view: "needs-you", params, canon: "#/needs-you" };
       case "backlog": return { view: "threads", params: new URLSearchParams("state=backlog"), canon: "#/threads?state=backlog" };
       case "conv": case "thread": return rest ? { view: "conv", tid: dec(rest) } : { view: "needs-you", params, canon: "#/needs-you" };
@@ -522,7 +522,7 @@ const Helm = (() => {
       ["Ctrl+D", "today's day page"], ["Alt+Shift+N", "file a card, from anywhere, the editor included"],
     ]],
     ["Conversation", [
-      ["Enter", "in the composer: send (Shift+Enter for a new line); on a focused answer button: submit. Space is deliberately dead (helm-web v10)"],
+      ["Enter", "in the composer: send (Shift+Enter for a new line); on a focused answer button: submit. Space is deliberately dead"],
       ["Ctrl+Enter", "in the composer: send the note only (no option picked). In the day page's append box: append."],
       ["Esc", "on a phone: back to the list"],
     ]],

@@ -18,7 +18,7 @@ import hashlib
 import re
 import time
 
-# How a Helm event's kind reads in the timeline (helm-web v43's labels).
+# How a Helm event's kind reads in the timeline.
 KIND_LABEL = {
     "state-change": "state", "filed": "filed", "update": "producer update", "failure-detail": "failure detail",
     "rule-breach": "rule breach", "log-tail": "log tail", "chat-note": "chat note", "park": "parked",

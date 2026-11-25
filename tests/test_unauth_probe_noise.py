@@ -26,7 +26,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 TMP = tempfile.mkdtemp(prefix="helm_test_unauth_probe_")
 TOKEN = "unauth-probe-test-token-8c1d"
-os.environ["HELM_SITE"] = "work"
 os.environ["HELM_NOTES_PROFILE"] = "fixed"
 os.environ["HELM_NOTES_MODE"] = "store"
 os.environ["HELM_NOTES_ROOT"] = os.path.join(TMP, "notes")

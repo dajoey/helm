@@ -345,11 +345,11 @@ def _web_press(request):
     """The proof that a request came from the owner's signed-in page, or None.
 
     The web role (behind Authentik) is the only caller that holds HELM_WEB_PRESS_KEY: it sends it as
-    X-Helm-Web-Key next to the login it forwards as X-Helm-Actor. Every other bearer holder has the
+    X-Helm-Press-Key next to the login it forwards as X-Helm-Actor. Every other bearer holder has the
     site token and can send any X-Helm-Actor, so the login alone proves nothing; with the key unset
     on this site nobody can press (fail closed). Only a Use-the-draft press asks for this."""
     press_key = os.environ.get("HELM_WEB_PRESS_KEY", "").strip()
-    given = request.headers.get("x-helm-web-key", "")
+    given = request.headers.get("x-helm-press-key", "")
     login = request.headers.get("x-helm-actor", "").strip()
     try:
         ok = bool(press_key) and bool(given) and hmac.compare_digest(given.encode("utf-8"), press_key.encode("utf-8"))

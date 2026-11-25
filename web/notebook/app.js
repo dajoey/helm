@@ -2,7 +2,7 @@
 // design. Home (today's page, what changed, what is in play, the fleet atlas, the shelves), the note page (outline,
 // latest entries, the Connected pane), the topic, the day as a ship's log, folders, the editor (store mode only;
 // read-only at home where the wiki is the truth), the quick switcher (Ctrl+O), rename with its dry run, attachments.
-// The shell (shell.js) owns the routes and the top bar and calls navigate(); the inbox is helm-web's (app.js), so
+// The shell (shell.js) owns the routes and the top bar and calls navigate(); the inbox is the web UI's (app.js), so
 // Its inbox / backlog / thread views are gone from here and a thread opens as its conversation overlay
 // (#/conv/<id>). The rail and the header are drawn from the same state; a refresh that rebuilds the view never
 // touches what is being typed. Every link to another object is a chip (Helm.chip) and the right pane is
@@ -51,7 +51,7 @@ const S = {
 const $ = id => document.getElementById(id);
 const main = () => $("main");
 const html2el = s => { const d = document.createElement("div"); d.innerHTML = s; return d.firstElementChild; };
-// The live thread list the shell already holds (helm-web's app.js state); empty when it is not there.
+// The live thread list the shell already holds (the web UI's app.js state); empty when it is not there.
 const liveThreads = () => { try{ return typeof state !== "undefined" && state && Array.isArray(state.threads) ? state.threads : []; }catch(e){ return []; } };
 
 // --- Data ------------------------------------------------------------------------------

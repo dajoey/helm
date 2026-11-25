@@ -2,7 +2,7 @@
 
 Run: python3 tests/test_screens_keys.py
 
-Every retained helm-web key still does its job in the three-pane app (? help, / search,
+Every retained web key still does its job in the three-pane app (? help, / search,
 N file a card, E and C expand and collapse, F answers first, Ctrl+O the switcher, Ctrl+D
 today's note, Enter and Ctrl+Enter send, Ctrl/Cmd+Enter and Enter in the title file a new card
 on both sites); retired T is inert. A draft and a fold survive reloads, the mutating buttons carry
@@ -103,7 +103,7 @@ def main():
               d.eval("document.querySelector('.conv-note').value"))
         d.close()
 
-        # helm-web dropped the drafts and folds of threads no list held on every
+        # the web UI dropped the drafts and folds of threads no list held on every
         # read; the new web kept them forever, so helm.drafts and helm.fold only ever grew.
         print("\nL10 · drafts and folds of threads no list holds are dropped")
         seed = ("(() => { localStorage.setItem('helm.drafts', JSON.stringify({'t-gone:note': 'orphan', 't-portal-name:note': 'live',"
@@ -206,7 +206,7 @@ def main():
         d.close()
 
         # the owner 2026-09-09, "I can't select the timing or folder anymore": the sheet focused
-        # the title, the phone keyboard opened over the pickers. helm-web v13 stopped focusing it.
+        # the title, the phone keyboard opened over the pickers. an earlier build stopped focusing it.
         print("\nL9 · the phone: file-a-card leaves the keyboard shut")
         d = Drive(browser, st.home, PHONE, "#/threads")
         d.wait("#list-threads .lrow")

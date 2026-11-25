@@ -6,7 +6,7 @@
    up, and a composer that works in every state:
      needs-you  -> the ask's options, context and how-to; a note with the answer, files,
                    "send note only", snooze, "don't ask again", backlog, close on a
-                   card with no ask — everything helm-web's card offered (L10);
+                   card with no ask — everything the earlier card offered (L10);
      working, waiting -> a note is an answer in his words and changes course;
      done, backlog -> a note reopens or pulls it back;
      gate-held  -> Bring it back.
@@ -355,7 +355,7 @@
   }
   noteBox.addEventListener("input", () => { paintSend(); noteBox.style.height = "auto"; noteBox.style.height = Math.min(160, noteBox.scrollHeight) + "px"; });
 
-  // A tap on the thread through the store (helm-web's act(): one lock, the draft cleared on
+  // A tap on the thread through the store (the earlier UI's act(): one lock, the draft cleared on
   // acceptance, the lists re-read). The conversation re-reads itself after.
   // While it is out the composer is dimmed and inert : the foot
   // outlives the redraw, so the busy state is cleared here, after the re-read or on a refusal.
@@ -530,7 +530,7 @@
       if (wrap.childNodes.length) askBox.append(wrap);
       storyBox.replaceChildren(storyEntry(story, askedAt(t)));
       attachLabel.classList.remove("hidden");
-      // the quiet line of secondary actions helm-web's card carried (v32)
+      // the quiet line of secondary actions the earlier card carried
       if (ask.kind !== "text" && (ask.kind === "choice" || list.length > 1)) {
         const mute = el("button", "btn quiet", "Don't ask again"); mute.title = "Mute this kind of card. You won't be asked about it again.";
         markSubmit(mute, settleFirst(() => `Mute “${cardTitle()}”? It closes, nothing like it is asked again, and a muted card does not come back to reopen.`,

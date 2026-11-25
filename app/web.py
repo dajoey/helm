@@ -87,7 +87,7 @@ try:
     if os.environ.get("HELM_SENTRY_DSN"):
         from helm.scrub import before_send, event_scrubber
         sentry_sdk.init(dsn=os.environ["HELM_SENTRY_DSN"], environment=os.environ.get("HELM_SENTRY_ENV", "home"),
-                        server_name="helm-web", traces_sample_rate=0.0, send_default_pii=False,
+                        server_name="helm-ui", traces_sample_rate=0.0, send_default_pii=False,
                         event_scrubber=event_scrubber(), before_send=before_send, max_request_body_size="never")   # replies, notes and reports never ride along to the error tracker
     else:
         sentry_sdk = None
@@ -155,7 +155,7 @@ MAX_NOTE_BODY = 8 * 1024 * 1024
 _BIG_BODY = re.compile(r"/(attach|reply)$")
 _RAW_BODY = re.compile(r"^/api/notes/attach$")   # the body IS the file (X-Filename names it)
 
-# Timeouts as helm-web: 40 s ordinary, 300 s for a big upload, none for a stream.
+# Timeouts as the web role: 40 s ordinary, 300 s for a big upload, none for a stream.
 TIMEOUT = 40.0
 TIMEOUT_UPLOAD = 300.0
 
@@ -260,7 +260,7 @@ def _upstream_headers(request: Request, body_ctype: str | None) -> dict:
     if actor:
         h["X-Helm-Actor"] = actor
         if _press_key():
-            h["X-Helm-Web-Key"] = _press_key()
+            h["X-Helm-Press-Key"] = _press_key()
     if request.headers.get("x-filename"):
         h["X-Filename"] = request.headers["x-filename"]
     if _THREAD_VIEW.match(request.url.path) and request.headers.get("sec-fetch-dest"):
@@ -643,7 +643,7 @@ async def _client_error(request: Request) -> Response:
         try:
             sentry_sdk.capture_message(
                 "client %s: %s" % (kind, msg), level="error",
-                fingerprint=["helm-web-client", kind, re.sub(r"\d+", "N", msg)[:200], fname],
+                fingerprint=["web-client", kind, re.sub(r"\d+", "N", msg)[:200], fname],
                 tags={"role": "web", "source": "client"},
                 extras={"src": _redact(src), "line": line, "col": col, "view": view,
                         "stack": _redact(stack[:4000] if isinstance(stack, str) else ""),

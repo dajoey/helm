@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TMP = tempfile.mkdtemp(prefix="helm_test_rescan_")
 WIKI = os.path.join(TMP, "wiki")
 os.makedirs(os.path.join(WIKI, "Docker"))
-os.environ.update(HELM_SITE="home", HELM_NOTES_PROFILE="wiki", HELM_NOTES_MODE="folder-readonly", HELM_NOTES_ROOT=WIKI,
+os.environ.update(HELM_NOTES_PROFILE="wiki", HELM_NOTES_MODE="folder-readonly", HELM_NOTES_ROOT=WIKI,
                   HELM_NOTES_DB=os.path.join(TMP, "notes.db"), HELM_DB=os.path.join(TMP, "triage.db"), HELM_DATA=TMP,
                   HELM_APP_TOKEN="test-token")
 

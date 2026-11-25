@@ -3,7 +3,7 @@
     uv venv /tmp/iconvenv && uv pip install --python /tmp/iconvenv/bin/python pillow
     /tmp/iconvenv/bin/python tools/icons/make_icons.py
 
-The wheel is web/snes/icon-32.png (helm-web-snes-src build_assets.py helm_icon(32): a ship's wheel
+The wheel is web/snes/icon-32.png (build_assets.py helm_icon(32): a ship's wheel
 in SNES gold and wood on night-blue stripes), and web/icon-192.png / icon-512.png are that art
 scaled 6x and 16x. Those two fill the square to the edge, which suits purpose "any". A launcher
 that masks icons (mobile's circle, a squircle) keeps only the middle 80%, so a maskable icon

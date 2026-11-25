@@ -29,7 +29,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 TMP = tempfile.mkdtemp(prefix="helm_test_delete_route_")
 VAULT = os.path.join(TMP, "vault")
-os.environ["HELM_SITE"] = "work"
 os.environ["HELM_NOTES_PROFILE"] = "fixed"
 os.environ["HELM_NOTES_MODE"] = "store"
 os.environ["HELM_NOTES_ROOT"] = VAULT

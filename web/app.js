@@ -1,5 +1,5 @@
-/* Helm Triage web UI — the inbox's data layer (helm-web v43, reshaped for the three-pane app,
-   ). What stays from v43 unchanged: the 60 s poll with the cached copy and the red
+/* Helm Triage web UI — the inbox's data layer, reshaped for the three-pane app.
+   What is unchanged: the 60 s poll with the cached copy and the red
    banner, the classification (NEEDS YOU / IN FLIGHT / ON HOLD / BACKLOG / done), drafts that
    survive a refresh, the v10 submit gating, the file-a-card sheet, the lightbox, the body
    renderer and the toasts. What moved: the cards are gone — a thread is drawn once, as a row
@@ -216,7 +216,7 @@ async function load() {
     state.offline = false; state.offlineWhy = "";
     pruneOrphans();
     // The offline copy is a convenience: storage full or blocked is never an outage (it used to paint
-    // CAN'T REACH THE GATEWAY and refuse every answer; helm-web learned the same on 2026-09-26).
+    // CAN'T REACH THE GATEWAY and refuse every answer; an earlier build learned the same).
     try { localStorage.setItem("helm.cache", JSON.stringify({ t: state.generatedAt, threads: state.threads })); } catch { /* no offline copy */ }
     if (d.woke) toast(`${d.woke} snoozed thread${d.woke > 1 ? "s" : ""} woke up`);
   } catch (e) {
@@ -415,7 +415,7 @@ function openSheet(prefill) {
   dl.replaceChildren(...[...new Set(state.threads.filter(t => t.state !== "done").map(t => (t.category || "").trim()).filter(Boolean))].sort().map(c => { const o = el("option"); o.value = c; return o; }));
   $("#sheet").classList.remove("hidden");
   // Only with a mouse on a wide screen: on a phone or touch screen the focus opens the keyboard
-  // over the timing and folder pickers (the owner 2026-09-09; helm-web v13 dropped it, ).
+  // over the timing and folder pickers (an earlier build dropped it).
   if (matchMedia("(pointer: fine) and (min-width: 761px)").matches) $("#c-title").focus();
 }
 function closeSheet() { $("#sheet").classList.add("hidden"); }

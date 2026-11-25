@@ -25,7 +25,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TOKEN = "live-sweep-test-token-7d2a"
 os.environ["HELM_APP_TOKEN"] = TOKEN
 os.environ["HELM_API_URL"] = "http://api.test"
-os.environ["HELM_SITE"] = "home"
 os.environ.pop("HELM_WEB_REQUIRE_AUTH_HEADER", None)
 os.environ.pop("HELM_SENTRY_DSN", None)
 
@@ -101,7 +100,7 @@ check("it reaches the error tracker as the class name only (note N1: the app's f
       len(fake.messages) == 1 and "TypeError" in fake.messages[0]["msg"] and "x is undefined" not in fake.messages[0]["msg"], fake.messages)
 fp = fake.messages[0]["fingerprint"] if fake.messages else None
 check("its fingerprint groups by message and file, not by the tab or the line",
-      fp and fp[0] == "helm-web-client" and "board.js" in " ".join(fp) and "212" not in " ".join(fp), fp)
+      fp and fp[0] == "web-client" and "board.js" in " ".join(fp) and "212" not in " ".join(fp), fp)
 r = c.post("/api/client-error", json=rep, headers=AUTH)
 check("the same report again inside the window is not re-sent", r.status_code == 204 and len(fake.messages) == 1, len(fake.messages))
 for i in range(60):

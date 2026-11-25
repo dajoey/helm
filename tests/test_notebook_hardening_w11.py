@@ -33,7 +33,6 @@ TMP = tempfile.mkdtemp(prefix="helm_test_w11_")
 WIKI = os.path.join(TMP, "wiki")
 OUT = os.path.join(TMP, "outside")
 TOKEN = "test-token"
-os.environ["HELM_SITE"] = "home"
 os.environ["HELM_NOTES_PROFILE"] = "wiki"
 os.environ["HELM_NOTES_MODE"] = "folder"
 os.environ["HELM_NOTES_ROOT"] = WIKI

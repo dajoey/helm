@@ -1,7 +1,7 @@
 /* Helm PWA service worker: cache the app shell, never cache the API.
    The web role stamps VERSION (app/web.py _sw_version: a digest of every file under web/),
    so any static change drops installed clients' old shell. Never edit it by hand.
-   (helm-web counted by hand to v43, the Helm app to v13; the digest replaced the count.) */
+   (the count was kept by hand once; the digest replaced it.) */
 const VERSION = "__HELM_SW_VERSION__";
 const FONTS = ["newsreader-400.woff2", "newsreader-500.woff2", "newsreader-600.woff2", "newsreader-400-italic.woff2", "instrument-sans-400.woff2", "instrument-sans-500.woff2", "instrument-sans-600.woff2", "instrument-sans-700.woff2"].map((f) => "/fonts/" + f);
 const SHELL = ["/", "/index.html", "/errors.js", "/shell.js", "/glyphs.js", "/objects.js", "/home.js", "/palette.js", "/preview.js", "/shell.css", "/style.css", "/home.css", "/helm.css", "/app.js", "/actions.js", "/needsyou.js", "/threads.js",

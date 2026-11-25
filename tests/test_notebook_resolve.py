@@ -25,7 +25,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TMP = tempfile.mkdtemp(prefix="helm_test_resolve_")
 WIKI = os.path.join(TMP, "wiki")
 TOKEN = "resolve-test-token-7b2e"
-os.environ["HELM_SITE"] = "home"
 os.environ["HELM_NOTES_PROFILE"] = "wiki"
 os.environ["HELM_NOTES_MODE"] = "folder-readonly"
 os.environ["HELM_NOTES_ROOT"] = WIKI

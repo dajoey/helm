@@ -78,7 +78,7 @@ def start(data, vault, mode, timeout=60):
     port = free_port()
     env = {k: v for k, v in os.environ.items() if not k.startswith(("HELM_", "LEGACY_"))}
     env.update({
-        "HELM_ROLE": "api", "HELM_SITE": "home", "HELM_APP_TOKEN": "test-token",
+        "HELM_ROLE": "api", "HELM_APP_TOKEN": "test-token",
         "HELM_MODULES": "inbox,notebook", "HELM_DATA": data,
         "HELM_DB": os.path.join(data, "triage.db"),
         "HELM_NOTES_DB": os.path.join(data, "notes.db"),
@@ -218,7 +218,7 @@ def run() -> int:
     vault, data = fixture("afterflip")
     start(data, vault, "folder")
     env = {k: v for k, v in os.environ.items() if not k.startswith(("HELM_", "LEGACY_"))}
-    env.update({"HELM_SITE": "home", "HELM_DATA": data, "HELM_NOTES_DB": os.path.join(data, "notes.db"),
+    env.update({"HELM_DATA": data, "HELM_NOTES_DB": os.path.join(data, "notes.db"),
                 "HELM_NOTES_PROFILE": "wiki", "HELM_NOTES_MODE": "store", "HELM_NOTES_ROOT": vault})
     code = ("from notebook import cutover, export\n"
             "def boom(*a, **k): raise OSError('disk full')\n"

@@ -19,7 +19,6 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 TMP = tempfile.mkdtemp(prefix="helm_test_nb_api_")
-os.environ["HELM_SITE"] = "home"
 os.environ["HELM_NOTES_PROFILE"] = "wiki"
 os.environ["HELM_NOTES_MODE"] = "store"
 os.environ["HELM_NOTES_ROOT"] = os.path.join(TMP, "vault")

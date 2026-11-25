@@ -25,7 +25,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TOKEN = "web-role-test-token-3f9c1e"          # unique, so a grep for it is meaningful
 os.environ["HELM_APP_TOKEN"] = TOKEN
 os.environ["HELM_API_URL"] = "http://api.test"
-os.environ["HELM_SITE"] = "work"
 os.environ.pop("HELM_WEB_REQUIRE_AUTH_HEADER", None)
 
 import httpx  # noqa: E402
@@ -395,7 +394,7 @@ def run():
     check("app/web.py reads HELM_PORT, HELM_API_URL, HELM_APP_TOKEN and the login settings at import",
           all(k in src for k in ("HELM_PORT", "HELM_API_URL", "HELM_APP_TOKEN", "HELM_AUTH_HEADER",
                                  "HELM_TRUSTED_PROXIES", "HELM_DEV_LOGIN")))
-    check("MAX_BODY as helm-web", web.MAX_BODY == 64 * 1024 and web.MAX_ATTACH_BODY == 36 * 1024 * 1024)
+    check("MAX_BODY as the web role", web.MAX_BODY == 64 * 1024 and web.MAX_ATTACH_BODY == 36 * 1024 * 1024)
     r = c.request("OPTIONS", "/api/triage/threads", headers=AUTH)
     check("OPTIONS -> 404", r.status_code == 404)
     r = c.request("TRACE", "/", headers=AUTH)

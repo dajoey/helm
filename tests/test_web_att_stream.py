@@ -18,7 +18,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 os.environ["HELM_APP_TOKEN"] = "web-att-stream-test-token"
 os.environ["HELM_API_URL"] = "http://api.test"
-os.environ["HELM_SITE"] = "work"
 os.environ.pop("LEGACY_DASHBOARD_URL", None)
 os.environ.pop("HELM_WEB_REQUIRE_AUTH_HEADER", None)
 

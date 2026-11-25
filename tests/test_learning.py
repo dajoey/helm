@@ -12,6 +12,13 @@ from the dispatcher retired on 2026-09-14). Covers the contract's §6 probe list
   - ledger: retire stops rendering, supersede atomicity, changelog reports
   - render: scope isolation, ordering, the rendered block from the store read
   - pending gates: the honest gap appears, disappears, records the commit
+
+One flake is known and not reproduced: this suite has been seen once to exit with SIGSEGV
+(rc=-11) after printing all 89 checks passed - the crash is at interpreter teardown, not in a
+check. 25 runs in a row alone on CPython 3.14 and 5 on the 3.12 the CI pins were clean, so it
+is not tied to a Python version or to one section. run_all.py counts a suite that dies as a
+failure by design; when this suite is reported failed with its own count line intact, re-run
+it alone before looking for a real fault.
 """
 import json
 import os

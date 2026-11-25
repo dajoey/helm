@@ -801,7 +801,7 @@ code {
   letter-spacing: .08em;
   text-transform: uppercase;
 }
-/* (the brace above was missing in helm-web v34-v43: with CSS nesting every later rule
+/* (the brace above was missing in an earlier build: with CSS nesting every later rule
    nested under .ask-context .label and never applied) */
 .ask-about {
   font-size: 13px;

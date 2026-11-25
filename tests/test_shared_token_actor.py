@@ -8,7 +8,7 @@ actor header): with the switch off it still succeeds as the owner. Part 2 turns 
 shared HELM_APP_TOKEN has many holders, so a missing actor, or a `owner` claim with no signed-in
 login behind it, is recorded as the caller (the per-caller token's principal, else "api").
 the owner's own paths stay the owner: the web role's X-Helm-Actor, and a per-caller token whose
-principal is owner. Work Helm is unchanged (door_actor under HELM_SITE=work).
+principal is owner.
 """
 import os
 import sys

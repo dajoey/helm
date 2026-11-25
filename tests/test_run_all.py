@@ -59,16 +59,16 @@ check("a suite that ran no checks is a failure", res["test_zero.py"]["failed"] >
       res["test_zero.py"])
 
 
-SITE_FAKE = ('import os, sys\n'
-             'ok = "HELM_SITE" not in os.environ and "HELM_MODULES" not in os.environ and "HELM_SENTRY_DSN" not in os.environ'
-             ' and "LEGACY_API_TOKEN" not in os.environ\n'
-             'print("1 passed, 0 failed" if ok else "0 passed, 1 failed"); sys.exit(0 if ok else 1)\n')
-with open(os.path.join(tmp, "test_site.py"), "w") as fh:
-    fh.write(SITE_FAKE)
-_saved = {k: os.environ.get(k) for k in ("HELM_SITE", "HELM_MODULES", "HELM_SENTRY_DSN", "LEGACY_API_TOKEN")}
-os.environ.update(HELM_SITE="home", HELM_MODULES="inbox", HELM_SENTRY_DSN="https://x@y/1", LEGACY_API_TOKEN="host-exported-token-x")
+ENV_FAKE = ('import os, sys\n'
+            'ok = "HELM_DEV_LOGIN" not in os.environ and "HELM_MODULES" not in os.environ and "HELM_SENTRY_DSN" not in os.environ'
+            ' and "LEGACY_API_TOKEN" not in os.environ\n'
+            'print("1 passed, 0 failed" if ok else "0 passed, 1 failed"); sys.exit(0 if ok else 1)\n')
+with open(os.path.join(tmp, "test_env.py"), "w") as fh:
+    fh.write(ENV_FAKE)
+_saved = {k: os.environ.get(k) for k in ("HELM_DEV_LOGIN", "HELM_MODULES", "HELM_SENTRY_DSN", "LEGACY_API_TOKEN")}
+os.environ.update(HELM_DEV_LOGIN="owner", HELM_MODULES="inbox", HELM_SENTRY_DSN="https://x@y/1", LEGACY_API_TOKEN="host-exported-token-x")
 try:
-    site_res = run_all.run_one("test_site.py")
+    site_res = run_all.run_one("test_env.py")
 finally:
     for k, v in _saved.items():
         if v is None:
@@ -77,7 +77,7 @@ finally:
             os.environ[k] = v
 check("run_all strips the host's HELM_* / LEGACY_* environment from every suite",
       site_res["failed"] == 0 and site_res["rc"] == 0, site_res)
-os.remove(os.path.join(tmp, "test_site.py"))
+os.remove(os.path.join(tmp, "test_env.py"))
 
 
 def main_rc(keep):

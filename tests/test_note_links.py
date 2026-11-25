@@ -45,7 +45,6 @@ OLD_POSIX = "/home/someone/old-vault/"
 ALIASES = OLD_WIN + "\\;" + OLD_POSIX                 # a trailing separator on either is fine
 
 TMP = tempfile.mkdtemp(prefix="helm_test_note_links_")
-os.environ["HELM_SITE"] = "work"
 os.environ["HELM_NOTES_PROFILE"] = "fixed"
 os.environ["HELM_NOTES_MODE"] = "store"
 os.environ["HELM_NOTES_ROOT"] = os.path.join(TMP, "vault")

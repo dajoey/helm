@@ -60,7 +60,7 @@
   const srv = () => nowS() + (D.activity ? D.activity.skew : 0);
 
   // ---------- who ----------
-  const ME = /^(you|owner|helm-web|web)$/i;
+  const ME = /^(you|owner|web)$/i;
   const whoName = (c) => { const p = String(c.principal || c.source || "").trim(); return !p || ME.test(p) ? "You" : p; };
 
   // ---------- the log ----------

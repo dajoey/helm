@@ -45,9 +45,7 @@
    "module": "conversation-note-link",
    "size": "412x915",
    "file": "home/conversation-note-link-412x915.png",
-   "errors": [
-    "wait for .conv-empty, .conv-timeline .conv-msg, .conv-timeline .conv-sys: Page.wait_for_selector: Timeout 8000ms exceeded."
-   ],
+   "errors": [],
    "notebook_stubbed": false
   },
   {
@@ -167,9 +165,7 @@
    "module": "notebook-folder",
    "size": "999x1392",
    "file": "home/notebook-folder-999x1392.png",
-   "errors": [
-    "wait for #main .flist: Page.wait_for_selector: Timeout 8000ms exceeded."
-   ],
+   "errors": [],
    "notebook_stubbed": false
   },
   {
@@ -177,9 +173,7 @@
    "module": "notebook-folder",
    "size": "412x915",
    "file": "home/notebook-folder-412x915.png",
-   "errors": [
-    "wait for #list-notebook .rrow, #list-notebook .rsec, #list-notebook a: Page.wait_for_selector: Timeout 8000ms exceeded."
-   ],
+   "errors": [],
    "notebook_stubbed": false
   },
   {

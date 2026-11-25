@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import os
 
-EXTRA_DENY = ["x-helm-web-key", "x_helm_web_key", "helm_web_press_key", "press_key"]
+EXTRA_DENY = ["x-helm-press-key", "x_helm_press_key", "helm_web_press_key", "press_key"]
 FILTERED = "[Filtered]"
 
 

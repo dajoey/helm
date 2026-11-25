@@ -26,7 +26,6 @@ TMP = tempfile.mkdtemp(prefix="helm-card-jargon-")
 os.environ["HELM_APP_TOKEN"] = "test-token"
 os.environ["HELM_DB"] = os.path.join(TMP, "t.db")
 os.environ["HELM_ATTACH_DIR"] = os.path.join(TMP, "att")
-os.environ["HELM_SITE"] = "home"
 os.environ.pop("HELM_SENTRY_DSN", None)
 os.environ["HELM_CARD_RULES"] = "bookkeeping-jargon=reject"
 

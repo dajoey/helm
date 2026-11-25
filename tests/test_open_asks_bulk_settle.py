@@ -32,7 +32,6 @@ os.environ["HELM_APP_TOKEN"] = "test-token"
 os.environ["HELM_DB"] = DB
 os.environ["HELM_ATTACH_DIR"] = os.path.join(TMP, "att")
 os.environ["HELM_DISPATCHER_HB_FILE"] = os.path.join(TMP, "hb.json")
-os.environ["HELM_SITE"] = "work"
 os.environ.pop("HELM_MODULES", None)
 os.environ.pop("HELM_SENTRY_DSN", None)
 os.environ.pop("HELM_CARD_RULES", None)
@@ -59,11 +58,6 @@ def check(name, cond, detail=""):
     else:
         FAIL += 1
         print("  FAIL " + name + ("  <- " + str(detail)[:600] if detail != "" else ""))
-
-
-def use_site(name):
-    os.environ["HELM_SITE"] = name
-    site.reset()
 
 
 def raw():
@@ -358,25 +352,25 @@ def run():
     check("no token: open-asks 401", CLIENT.get(ASKS).status_code == 401)
     check("the web role proxies neither route", not web.ALLOW_POST.match(BULK) and not web.ALLOW_GET.match(ASKS))
 
-    print("\n9. at home too")
-    use_site("home")
+    print("\n9. the same rules through the other door")
+    site.reset()
     try:
         for tid in ("h-single", "h-bulk"):
             put(tid, ask={"kind": "choice", "prompt": "Which paint goes on the shed?", "requires": "decision",
                           "subject": "Shed paint", "recap": "The shed needs a colour. Only you can pick it.",
                           "context": CHOICE["context"], "options": CHOICE["options"]})
         code, body = page()
-        check("home: open-asks lists the lit cards", code == 200 and {"h-single", "h-bulk"}
+        check("open-asks lists the lit cards", code == 200 and {"h-single", "h-bulk"}
               <= {t["thread_id"] for t in body.get("threads") or []}, body)
         n1, n2 = len(events("h-single")[0]), len(events("h-bulk")[0])
         r1 = CLIENT.post("/api/triage/threads/h-single/reply", json={"value": "green"}, headers=AUTH)
         code, res = bulk([{"thread_id": "h-bulk", "value": "green"}])
         e1, e2 = events("h-single"), events("h-bulk")
-        check("home: bulk and single give the same events",
+        check("bulk and single give the same events",
               r1.status_code == 202 and (res.get("results") or [{}])[0].get("ok") is True
               and e1[0][n1:] == e2[0][n2:] and e1[1] == e2[1] and len(e1[0]) > n1, (r1.json(), res, e1, e2))
     finally:
-        use_site("home",)
+        site.reset()
 
     print("\n%d passed, %d failed" % (PASS, FAIL))
     return 1 if FAIL else 0
