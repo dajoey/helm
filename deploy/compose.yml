@@ -1,0 +1,82 @@
+# Helm, production: one image, two roles.
+#
+#   api  helm-api  the thread store API, bearer auth. Not published: only the web role and the
+#                  producers that hold HELM_APP_TOKEN talk to it.
+#   web  helm-web  the screens and the same-origin proxy. Published on loopback only, because the
+#                  web role trusts the login header a forward-auth proxy sets (HELM_AUTH_HEADER,
+#                  default X-Forwarded-User) from the peers in HELM_TRUSTED_PROXIES.
+#
+# Put a forward-auth proxy in front of helm-web (Traefik, Caddy, nginx + oauth2-proxy, Authelia,
+# Authentik...). The proxy authenticates the person and sets the header; Helm believes it only
+# from the proxy's address. Nothing here needs to know which proxy you chose.
+#
+# Copy .env.example to .env and fill in HELM_APP_TOKEN before the first `docker compose up`.
+name: helm
+
+x-helm-common: &helm-common
+  build:
+    context: ..
+    dockerfile: deploy/Dockerfile
+  image: ${HELM_IMAGE:-helm:local}
+  restart: unless-stopped
+  env_file: .env            # HELM_APP_TOKEN, and anything else the deployment needs
+
+services:
+  api:
+    <<: *helm-common
+    container_name: helm-api
+    environment:
+      HELM_ROLE: api
+      HELM_HOST: 0.0.0.0
+      HELM_PORT: "3038"
+      HELM_MODULES: inbox,conversations,notebook,activity
+      HELM_DATA: /data
+      HELM_DB: /data/triage.db
+      HELM_ATTACH_DIR: /data/attachments
+      HELM_DISPATCHER_HB_FILE: /data/dispatcher-heartbeat.json
+      # The notebook: `folder-readonly` indexes the folder it is given and writes nothing.
+      # `store` keeps its own copy and can write; see docs/SETUP.md.
+      HELM_NOTES_MODE: folder-readonly
+      HELM_NOTES_ROOT: /notes
+      HELM_NOTES_DB: /data/notes.db
+      # A card with no ask.subject or ask.recap is refused (helm/card_rules.py). The other rules
+      # stay in log mode until each is measured clean: GET /api/triage/card-rules.
+      HELM_CARD_RULES: no-subject-recap=reject,bookkeeping-jargon=reject
+      # Principals that are always recorded as themselves on reply/close/park and on their results.
+      HELM_BEARER_STRICT_PRINCIPALS: ${HELM_STRICT_PRINCIPALS:-}
+    volumes:
+      - helm-data:/data
+      - ${HELM_NOTES_DIR:-./notes}:/notes
+    ports:
+      - "127.0.0.1:3038:3038"       # loopback only: producers on this host, or through the proxy
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import os,urllib.request; urllib.request.urlopen('http://127.0.0.1:%s/api/meta' % os.environ['HELM_PORT'], timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  web:
+    <<: *helm-common
+    container_name: helm-web
+    environment:
+      HELM_ROLE: web
+      HELM_HOST: 0.0.0.0
+      HELM_PORT: "3037"
+      HELM_MODULES: inbox,conversations,notebook,activity
+      HELM_API_URL: http://api:3038
+      HELM_AUTH_HEADER: ${HELM_AUTH_HEADER:-X-Forwarded-User}
+      HELM_TRUSTED_PROXIES: ${HELM_TRUSTED_PROXIES:-172.16.0.0/12}   # the proxy's network
+      HELM_OWNER: ${HELM_OWNER:-owner}                               # the principal that may answer
+    ports:
+      - "127.0.0.1:3037:3037"       # the proxy reaches it here; never publish it to a network
+    depends_on: [api]
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import os,socket; socket.create_connection(('127.0.0.1', int(os.environ['HELM_PORT'])), 3).close()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  helm-data:

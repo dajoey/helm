@@ -1,0 +1,38 @@
+# CI: the same three steps every change runs locally.
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: deps
+        run: |
+          pip install -q -r requirements-dev.txt
+          python3 -m playwright install --with-deps chromium
+      - name: tests
+        # Three suites at a time: the marker step below still decides.
+        env:
+          HELM_TEST_JOBS: "3"
+        run: python3 tests/run_all.py
+      # A runner once cut the silent test step off at ten minutes and reported success. run_all.py
+      # writes tests/.run_all.done only when it reaches its end; without it the run did not finish.
+      - name: the test run finished
+        run: |
+          test -f tests/.run_all.done || { echo "tests/run_all.py did not run to its end"; exit 1; }
+          cat tests/.run_all.done
+          head -1 tests/.run_all.done | grep -qx 'exit 0'
+      - name: no secret-shaped strings in the tree
+        run: |
+          if grep -rn -E 'AKIA[0-9A-Z]{16}|-----BEGIN (RSA|OPENSSH|EC) PRIVATE KEY-----|HELM_APP_TOKEN=[A-Za-z0-9_-]{20,}' \
+             --include='*.py' --include='*.yml' --include='*.yaml' --include='*.md' --include='*.js' --include='*.sh' . \
+             | grep -v -E '^\./\.github/|AKIAIO...MPLE'; then
+            echo "a secret-shaped string is in the repo"; exit 1
+          fi

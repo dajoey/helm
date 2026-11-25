@@ -1,0 +1,58 @@
+# Helm in one command, on your own machine: no proxy, no sign-in service, no configuration.
+#
+#   1. cp .env.example .env  &&  set HELM_APP_TOKEN to the output of `openssl rand -hex 32`
+#   2. docker compose up -d --build
+#   3. open http://127.0.0.1:3037
+#
+# The web role runs with HELM_DEV_LOGIN=owner and binds 127.0.0.1, so it acts as the owner with no
+# proxy in front (it refuses to start that way on any other address). That is why this file uses
+# host networking for the web role: a container that published a port could not bind loopback.
+# Read docs/SETUP.md before this touches anything but your own machine.
+name: helm-quickstart
+
+x-quickstart-common: &quickstart-common
+  build:
+    context: .
+    dockerfile: deploy/Dockerfile
+  image: helm:local
+
+services:
+  api:
+    <<: *quickstart-common
+    container_name: helm-quickstart-api
+    environment:
+      HELM_ROLE: api
+      HELM_HOST: 0.0.0.0
+      HELM_PORT: "3038"
+      HELM_APP_TOKEN: ${HELM_APP_TOKEN:?set HELM_APP_TOKEN in .env}
+      HELM_OWNER: ${HELM_OWNER:-owner}
+      HELM_MODULES: inbox,conversations,notebook,activity
+      HELM_DATA: /data
+      HELM_DB: /data/triage.db
+      HELM_ATTACH_DIR: /data/attachments
+      HELM_NOTES_MODE: folder-readonly
+      HELM_NOTES_ROOT: /notes
+      HELM_NOTES_DB: /data/notes.db
+    volumes:
+      - helm-quickstart-data:/data
+      - ./notes:/notes       # put your own markdown here; it is read, never written
+    ports:
+      - "127.0.0.1:3038:3038"
+
+  web:
+    <<: *quickstart-common
+    container_name: helm-quickstart-web
+    network_mode: host
+    environment:
+      HELM_ROLE: web
+      HELM_HOST: 127.0.0.1          # the dev login is only allowed on loopback
+      HELM_PORT: "3037"
+      HELM_DEV_LOGIN: ${HELM_OWNER:-owner}
+      HELM_OWNER: ${HELM_OWNER:-owner}
+      HELM_APP_TOKEN: ${HELM_APP_TOKEN:?set HELM_APP_TOKEN in .env}
+      HELM_API_URL: http://127.0.0.1:3038
+      HELM_MODULES: inbox,conversations,notebook,activity
+    depends_on: [api]
+
+volumes:
+  helm-quickstart-data:

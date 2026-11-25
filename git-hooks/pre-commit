@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Optional pre-commit gate: fast lint on what a commit stages, under ten seconds.
+# Install it with:  cp git-hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+# Bypass a run: SKIP_GATE=1 git commit
+set -u
+REPO="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+cd "$REPO" || exit 1
+
+fail=0
+staged() { git diff --cached --name-only --diff-filter=ACM -- "$1"; }
+
+PYFILES="$(staged '*.py')"
+if [ -n "$PYFILES" ]; then
+  if command -v ruff >/dev/null 2>&1; then
+    while IFS= read -r f; do
+      [ -n "$f" ] || continue
+      ruff check --select F,E9 "$f" || fail=1
+    done <<< "$PYFILES"
+  fi
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    git show ":$f" | python3 -c 'import sys; compile(sys.stdin.read(), sys.argv[1], "exec")' "$f" || fail=1
+  done <<< "$PYFILES"
+fi
+
+SHFILES="$(staged '*.sh')"
+if [ -n "$SHFILES" ]; then
+  echo "$SHFILES" | xargs -n1 bash -n 2>&1 || fail=1
+  if command -v shellcheck >/dev/null 2>&1; then
+    echo "$SHFILES" | xargs shellcheck -S error 2>&1 || fail=1
+  fi
+fi
+
+if [ "$fail" -ne 0 ]; then
+  echo "pre-commit: lint findings above; fix them or commit with SKIP_GATE=1" >&2
+  exit 1
+fi
+echo "pre-commit: clean"

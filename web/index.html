@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en" data-theme="helm">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#08131f">
+<meta name="color-scheme" content="dark">
+<meta name="referrer" content="no-referrer">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- The installed app name and icons are still swapped per site by app/web.py APP_HEAD. -->
+<title>Helm</title>
+<meta name="application-name" content="Helm">
+<meta name="apple-mobile-web-app-title" content="Helm">
+<link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials">
+<link rel="icon" href="/snes/icon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<script src="/errors.js"></script>
+<!-- One fixed design; retired theme sheets no longer compete with the base cascade. -->
+<style>@import url("/style.css") layer(base); @import url("/conversation.css") layer(base); @import url("/shell.css") layer(base); @import url("/notebook/notebook.css") layer(base); @import url("/home.css") layer(base); @import url("/helm.css") layer(base);</style>
+</head>
+<body data-view="needs-you" data-pane="left">
+<!-- One workspace shell: navigation, global search and the selected object's context.
+     The panes and their state routes stay identical on every site. -->
+<header class="shell-top" id="shell-top">
+  <button class="shell-back" id="shell-back" type="button" title="Back" aria-label="Back">‹</button>
+  <a class="shell-brand" href="#/needs-you" title="Helm — what needs you">
+    <svg class="shell-mark" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="20" cy="20" r="7"/><circle cx="20" cy="20" r="13.5"/><path d="M20 3v8M20 29v8M3 20h8M29 20h8M8 8l5.5 5.5M26.5 26.5L32 32M32 8l-5.5 5.5M13.5 26.5L8 32"/></svg>
+    <span class="shell-name">Helm</span>
+  </a>
+  <form class="shell-search" id="shell-search" role="search" autocomplete="off">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4 4"/></svg>
+    <input id="q" type="search" placeholder="Search threads, notes and cards" aria-label="Search threads and notes" autocomplete="off">
+    <kbd class="search-key" aria-hidden="true">/</kbd>
+  </form>
+  <div class="shell-hud" id="shell-hud">
+    <span id="you" class="you" title="Everything waiting on you"><span id="you-n" class="you-n">–</span><span class="you-l">need you</span></span>
+    <span id="fire" class="fire" title="Needs-you threads marked NOW"><span id="fire-n" class="fire-n">–</span><span class="fire-l">on fire</span></span>
+  </div>
+  <div class="shell-tools">
+    <button id="add" class="ctrl-btn" type="button" title="File a card (N)" aria-label="File a card"><span class="ctrl-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="ctrl-text">New</span></button>
+    <button id="refresh" class="ctrl-btn" type="button" title="Refresh (R)" aria-label="Refresh"><span class="ctrl-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 8a8 8 0 1 0 1 7M19 4v4h-4"/></svg></span></button>
+    <button id="btn-props" class="ctrl-btn" type="button" title="Show or hide the Connected pane" aria-label="Connected"><span class="ctrl-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="5" width="16" height="14" rx="1.5"/><path d="M14 5v14"/></svg></span><span class="ctrl-text">Connected</span></button>
+    <button id="btn-help" class="ctrl-btn" type="button" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts"><span class="ctrl-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.8 9a2.3 2.3 0 1 1 3.1 2.2c-.9.4-.9 1-.9 1.8M12 16.5v.1"/></svg></span></button>
+  </div>
+</header>
+
+<div id="banner" class="banner hidden"></div>
+
+<!-- The rail as a drawer (phone width): shell.js moves the section rows and the status cell in. Opened by the More tab. -->
+<div id="rail-scrim" class="hx-scrim" aria-hidden="true"></div>
+<aside id="rail-drawer" class="hx-drawer" aria-label="Sections" aria-hidden="true">
+  <header class="hx-drawer-head"><span class="hx-drawer-title">Helm</span><button id="rail-close" class="hx-drawer-close" type="button" title="Close the sections" aria-label="Close the sections">✕</button></header>
+  <nav id="rail-rows" class="hx-drawer-rows" aria-label="Sections"></nav>
+</aside>
+
+<!-- The phone's bottom tab bar; More (#rail-open) opens the drawer above. shell.js draws the other tabs. -->
+<nav id="tabbar" class="tabbar" aria-label="Main"><button class="tab rail-open" id="rail-open" type="button" title="Sections" aria-label="Open the sections" aria-controls="rail-drawer" aria-expanded="false"><span class="tab-gl" aria-hidden="true"></span><span class="tab-l">More</span></button></nav>
+
+<div id="panes" class="panes">
+  <!-- ===================== LEFT: the rail (sections with counts) and the open section's list ===================== -->
+  <!-- The rail: slim icon-over-label rows, one per section; shell.js draws them. -->
+  <nav id="shell-rail" class="shell-rail" aria-label="Sections"><div id="shell-rail-rows" class="shell-rail-rows"></div></nav>
+  <!-- The list column: the open section's list, drawn by its module into its own host. -->
+  <nav id="pane-left" class="pane pane-left" aria-label="List">
+    <!-- Section lists. Each is drawn by its module into its own host; the shell shows the open one. -->
+    <div id="list-needs-you" class="nav-list hidden" data-sec="needs-you"></div>
+    <div id="list-threads" class="nav-list hidden" data-sec="threads"></div>
+    <div id="list-notebook" class="nav-list hidden" data-sec="notebook"><nav id="rail" class="nb-rail" aria-label="Notebook"></nav></div>
+    <div id="list-activity" class="nav-list hidden" data-sec="activity"></div>
+  </nav>
+
+  <!-- ===================== MIDDLE: the conversation, or a section's page ===================== -->
+  <main id="pane-main" class="pane pane-main">
+    <div id="hx-banner" class="hx-banner hidden" role="status" aria-live="polite"></div>
+    <div id="view-conv" class="main-view hidden"></div>
+    <div id="view-home" class="main-view view-home hidden"><div class="view hm-home"><div class="hm-empty-s">Reading today…</div></div></div>
+    <div id="view-empty" class="main-view"><div class="empty"><span class="big">Reading the board…</span></div></div>
+    <div id="view-notebook" class="main-view view-notebook hidden"><div id="main" class="nb-main"><div class="view empty">loading</div></div></div>
+    <div id="view-search" class="main-view hidden"><div class="view"><div class="empty">Type in the search box, or press <kbd>/</kbd>.</div></div></div>
+    <div id="view-activity" class="main-view hidden"><div class="view"><div class="empty">Reading…</div></div></div>
+  </main>
+
+  <!-- ===================== RIGHT: the properties of what is in the middle ===================== -->
+  <aside id="pane-props" class="pane pane-props" aria-label="Connected">
+    <header class="props-head"><span class="props-title" id="props-title">Connected</span><small class="props-sub" id="props-sub"></small><button class="props-close" id="props-close" type="button" title="Close properties" aria-label="Close properties">✕</button></header>
+    <div id="props-body" class="props-body"></div>
+    <aside id="aside" class="nb-aside hidden"></aside>
+  </aside>
+</div>
+
+<!-- File-a-card sheet (POST /api/triage/threads/create) -->
+<div id="sheet" class="sheet hidden" role="dialog" aria-modal="true">
+  <div class="sheet-body">
+    <div class="sheet-head">
+      <h2>File a card</h2>
+      <button class="sheet-close" id="c-close-x" type="button" title="Close" aria-label="Close sheet">✕</button>
+    </div>
+    <p class="hint" id="c-hint">Lands under IN FLIGHT for an agent — it does not light up your own queue.</p>
+    <input id="c-title" maxlength="200" placeholder="Title">
+    <textarea id="c-details" rows="4" maxlength="8000" placeholder="Details (optional)"></textarea>
+    <!-- Pickers are chip rows, not <select> (helm-web v13): native select popups were unreachable on the phone. -->
+    <div class="pick">
+      <span class="label">Who</span>
+      <div id="c-intent-row" class="pickrow"></div>
+    </div>
+    <div class="pick">
+      <span class="label">When</span>
+      <div id="c-urgency-row" class="pickrow"></div>
+    </div>
+    <input id="c-category" maxlength="60" placeholder="Category (optional)" list="c-cats"><datalist id="c-cats"></datalist>
+    <input id="c-link" maxlength="500" placeholder="Link (https://… or note:Folder/Note)">
+    <input id="c-blocked" class="hidden" maxlength="200" placeholder="Waiting on whom or what?">
+    <div class="row">
+      <button class="btn" id="c-cancel" type="button">Cancel</button>
+      <button class="btn primary" id="c-file">File it</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox modal for high-res visual and diagram viewing -->
+<div id="lightbox" class="lightbox hidden" role="dialog" aria-modal="true" aria-label="Visual detail">
+  <div class="lightbox-overlay"></div>
+  <div class="lightbox-content">
+    <button class="lightbox-close" id="lightbox-close" type="button" title="Close" aria-label="Close">✕</button>
+    <img id="lightbox-img" src="" alt="Enlarged view">
+    <div id="lightbox-caption" class="lightbox-caption"></div>
+  </div>
+</div>
+
+<!-- The toast host (.toast is created per message by app.js). -->
+<div id="toast"></div>
+
+<!-- Classic scripts, in dependency order: the shell first (modules, routes, panes, keys), then the
+     inbox's data layer (app.js) and everything that wraps its globals, then the lists and the pages. The
+     notebook is an ES module the shell imports on demand (plain modules, no build step). -->
+<script src="/modules.js"></script>
+<script src="/shell.js"></script>
+<script src="/glyphs.js"></script>
+<script src="/objects.js"></script>
+<script src="/preview.js"></script>
+<script src="/app.js"></script>
+<script src="/actions.js"></script>
+<script src="/needsyou.js"></script>
+<script src="/threads.js"></script>
+<script src="/conversation.js"></script>
+<script src="/search.js"></script>
+<script src="/activity.js"></script>
+<script src="/tips.js"></script>
+<script src="/home.js"></script>
+<script src="/palette.js"></script>
+</body>
+</html>

@@ -1,0 +1,564 @@
+/* The conversation: the middle pane's content and the right pane's
+   properties. Built on inherited surface/text colors so both themes (SNES + Tokyo Night)
+   render it without a per-theme sheet. */
+.conv-panel {
+  display: flex; flex-direction: column;
+  flex: 1; min-width: 0; height: 100%; min-height: 0;
+  position: relative;
+}
+.conv-head {
+  display: flex; align-items: center; gap: 10px; flex: none;
+  padding: 10px 14px;
+  border-bottom: 1px solid color-mix(in srgb, var(--wash) 8%, transparent);
+  background: color-mix(in srgb, var(--wash) 2%, transparent);
+}
+.conv-head-main { min-width: 0; flex: 1; }
+.conv-title { margin: 0; font-size: 1.0rem; line-height: 1.25; overflow-wrap: anywhere; }
+.conv-sub { font-size: 0.72rem; opacity: 0.65; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.conv-banner { flex: none; padding: 8px 14px; font-size: 0.8rem; color: var(--gold); background: color-mix(in srgb, var(--gold) 10%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--gold) 35%, transparent); }
+.conv-banner.hidden { display: none; }
+
+.conv-timeline {
+  flex: 1; overflow-y: auto; overscroll-behavior: contain; min-height: 0;
+  padding: 14px 14px 20px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.conv-empty { opacity: 0.55; text-align: center; margin-top: 40px; font-size: 0.9rem; }
+
+/* messages */
+.conv-msg { max-width: 86%; border-radius: 12px; padding: 8px 12px; }
+.conv-msg .conv-msg-who { font-size: 0.68rem; opacity: 0.6; margin-bottom: 4px; }
+.conv-msg .conv-msg-body { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.9rem; line-height: 1.45; }
+.conv-msg:not(.mine) { align-self: flex-start; background: color-mix(in srgb, var(--wash) 6%, transparent); border: 1px solid color-mix(in srgb, var(--wash) 7%, transparent); }
+.conv-msg.mine { align-self: flex-end; background: color-mix(in srgb, var(--blue) 16%, transparent); border: 1px solid color-mix(in srgb, var(--blue) 35%, transparent); }
+.conv-msg-pending { font-size: 0.68rem; opacity: 0.75; margin-top: 5px; font-style: italic; }
+
+/* system events */
+.conv-sys { align-self: center; display: flex; align-items: baseline; gap: 8px; max-width: 92%;
+  font-size: 0.75rem; opacity: 0.72; text-align: center; padding: 2px 8px; }
+.conv-sys-dot { opacity: 0.7; }
+.conv-sys-text { overflow-wrap: anywhere; }
+.conv-sys-ts { opacity: 0.55; white-space: nowrap; }
+
+/* historical asks */
+.conv-ask-ev { align-self: stretch; border: 1px dashed color-mix(in srgb, var(--gold) 40%, transparent); border-radius: 10px; padding: 8px 12px; }
+.conv-ask-ev-head { font-size: 0.68rem; opacity: 0.6; margin-bottom: 4px; }
+.conv-ask-ev-prompt { font-size: 0.88rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* live run blocks */
+.conv-run { align-self: stretch; border: 1px solid color-mix(in srgb, var(--wash) 10%, transparent); border-radius: 10px; overflow: hidden; }
+.conv-run-sum { cursor: pointer; padding: 8px 12px; display: flex; align-items: center; gap: 8px;
+  font-size: 0.8rem; background: color-mix(in srgb, var(--wash) 3%, transparent); list-style: none; flex-wrap: wrap; }
+.conv-run-sum::-webkit-details-marker { display: none; }
+.conv-run-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c38); flex: none; }
+.conv-run-dot.live { background: var(--blue); animation: conv-pulse 1.6s ease-in-out infinite; }
+@keyframes conv-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+.conv-run-title { font-weight: 600; }
+.conv-run-tools { opacity: 0.6; font-size: 0.72rem; overflow: hidden; text-overflow: ellipsis; }
+.conv-run-body { padding: 8px 12px 10px; }
+.conv-run-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.conv-chip { font-size: 0.7rem; border: 1px solid color-mix(in srgb, var(--purple) 45%, transparent); color: var(--purple);
+  border-radius: 999px; padding: 2px 9px; }
+.conv-run-tail { margin: 0; font-family: ui-monospace, monospace; font-size: 0.72rem; line-height: 1.5;
+  white-space: pre-wrap; overflow-wrap: anywhere; max-height: 220px; overflow-y: auto;
+  background: rgba(0, 0, 0, 0.35); border-radius: 8px; padding: 8px 10px; opacity: 0.9; }
+
+/* jump to latest */
+.conv-jump { position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%);
+  z-index: 5; border: none; cursor: pointer; border-radius: 999px;
+  padding: 7px 14px; font-size: 0.78rem; font-weight: 600;
+  background: var(--blue); color: var(--bg); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4); }
+.conv-jump.hidden { display: none; }
+.conv-panel { position: relative; }
+
+/* composer */
+.conv-foot { border-top: 1px solid color-mix(in srgb, var(--wash) 8%, transparent); padding: 10px 14px 12px; }
+.conv-live-ask { margin-bottom: 10px; }
+.conv-live-prompt { font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; }
+.conv-opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.conv-opts:has(> .conv-opt:only-child) { grid-template-columns: minmax(180px, 320px); }
+.conv-opt { padding: 9px 12px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-align: left;
+  background: color-mix(in srgb, var(--blue) 14%, transparent); border: 1px solid color-mix(in srgb, var(--blue) 40%, transparent); color: inherit; }
+.conv-opt:hover { background: color-mix(in srgb, var(--blue) 28%, transparent); }
+.conv-opt .lbl { display: block; }
+.conv-opt .eff { display: block; font-weight: 400; font-size: 0.72rem; opacity: 0.7; margin-top: 2px; }
+.conv-opt.opt-approve { border-color: color-mix(in srgb, var(--ok) 50%, transparent); background: color-mix(in srgb, var(--ok) 14%, transparent); }
+.conv-opt.opt-deny { border-color: color-mix(in srgb, var(--crit) 50%, transparent); background: color-mix(in srgb, var(--crit) 12%, transparent); }
+.conv-opt.opt-amend { border-color: color-mix(in srgb, var(--purple) 50%, transparent); background: color-mix(in srgb, var(--purple) 12%, transparent); }
+/* an option that ends the card (): quieter than one that starts work, tagged "settles it" */
+.conv-opt.opt-terminal { background: transparent; border-style: dashed; border-color: color-mix(in srgb, var(--wash) 28%, transparent); }
+.conv-opt.opt-terminal:hover { background: color-mix(in srgb, var(--wash) 8%, transparent); }
+.conv-opt.opt-terminal .lbl { opacity: 0.75; }
+.conv-opt .conv-opt-tag { display: inline-block; margin-top: 3px; padding: 0 6px; border: 1px solid currentColor; border-radius: 8px;
+  font-size: 0.62rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; opacity: 0.6; }
+/* how old the question is (catchupChips): a wrapping line of plain chips; amber past a day, red past a week */
+.conv-catchup { display: flex; flex-wrap: wrap; gap: 4px 8px; margin: 0 0 8px; font-size: 0.74rem; }
+.conv-catchup .conv-cu-chip { padding: 1px 8px; border-radius: 999px; border: 1px solid color-mix(in srgb, currentColor 30%, transparent); opacity: 0.8; }
+.conv-catchup .conv-cu-chip.conv-cu-old { color: var(--gold); opacity: 1; font-weight: 600; }
+.conv-catchup .conv-cu-chip.conv-cu-stale { color: var(--crit); opacity: 1; font-weight: 600; }
+.conv-catchup .conv-cu-chip.conv-cu-subject { font-weight: 600; opacity: 1; }
+.conv-ask-ctx.fold > summary { cursor: pointer; list-style: none; }
+.conv-ask-ctx.fold > summary::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 10px 2px 2px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); }
+.conv-ask-ctx.fold[open] > summary::before { transform: rotate(45deg); margin-bottom: 4px; }
+.conv-recap { margin: 0 0 10px; }
+.conv-recap-label { font-size: 0.64rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; opacity: 0.55; margin-bottom: 2px; }
+.conv-recap-body { font-size: 0.86rem; line-height: 1.4; }
+.conv-about { font-size: 0.78rem; opacity: 0.75; margin-bottom: 6px; }
+.conv-about .about-label { opacity: 0.6; }
+.conv-about .about-desc { white-space: pre-line; }
+.conv-about.folded .about-desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
+.conv-about .about-more { background: none; border: 0; padding: 0; margin-left: 4px; color: inherit; font: inherit; text-decoration: underline; cursor: pointer; opacity: 0.8; }
+.conv-foot { flex: none; max-height: 62%; overflow: auto; }
+/* an answer on its way : dimmed and inert until it lands */
+.conv-foot.busy { opacity: .5; pointer-events: none; cursor: progress; }
+/* a settling tap waiting on its Yes (): one line, the question and Yes / No */
+.conv-confirm { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 0 0 10px; padding: 8px 10px; border-radius: 10px;
+  background: color-mix(in srgb, var(--crit) 10%, transparent); border: 1px solid color-mix(in srgb, var(--crit) 45%, transparent); }
+.conv-confirm.hidden { display: none; }
+.conv-confirm-text { flex: 1 1 220px; font-size: 0.82rem; font-weight: 600; }
+.conv-confirm .btn { flex: none; font-size: 0.8rem; padding: 4px 14px; }
+.conv-foot-acts { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+.conv-foot-acts .snooze { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.conv-foot-acts .snooze-l { font-size: 0.68rem; opacity: 0.55; text-transform: uppercase; letter-spacing: .08em; }
+.conv-foot-acts .snooze-btns { display: flex; gap: 4px; }
+.conv-foot-acts .snooze-btn { padding: 3px 8px; font-size: 0.72rem; }
+.conv-foot-acts .btn.quiet { font-size: 0.78rem; padding: 4px 10px; }
+.conv-staged { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.conv-staged:empty { display: none; }
+.conv-attach { flex: none; align-self: flex-end; }
+.conv-live-ask.gate-kept .conv-live-prompt { color: var(--gold); font-weight: 500; }
+.conv-sendrow { display: flex; gap: 8px; align-items: flex-end; }
+.conv-note { flex: 1; resize: none; border-radius: 10px; border: 1px solid color-mix(in srgb, var(--wash) 14%, transparent);
+  background: rgba(0, 0, 0, 0.3); color: inherit; padding: 9px 11px; font: inherit; font-size: 0.9rem;
+  max-height: 130px; min-height: 38px; }
+.conv-send { flex: none; }
+.conv-hint { font-size: 0.7rem; opacity: 0.55; margin-top: 6px; }
+
+/* the card's 💬 affordance */
+.card-conv-btn { background: none; border: none; color: inherit; cursor: pointer;
+  font-size: 0.95rem; padding: 4px 6px; opacity: 0.55; border-radius: 8px; }
+.card-conv-btn:hover { opacity: 1; background: color-mix(in srgb, var(--wash) 8%, transparent); }
+
+/* phase 2 "Steer": queued-message states, run menu, addressee chip, full run */
+.conv-msg-state { font-size: 0.68rem; margin-top: 5px; font-weight: 600; }
+.conv-msg-state.queued { color: var(--gold); }
+.conv-msg-state.delivered { color: var(--ok); opacity: 0.8; font-weight: 500; }
+.conv-msg-state.interrupted { color: var(--blue); }
+.conv-msg-state.withdrawn { opacity: 0.5; text-decoration: line-through; font-weight: 500; }
+.conv-msg-addr { font-size: 0.68rem; opacity: 0.65; margin-top: 4px; font-style: italic; }
+.conv-qbtns { display: flex; gap: 6px; margin-top: 6px; }
+.conv-qbtn { font-size: 0.72rem; font-weight: 600; cursor: pointer; border-radius: 8px;
+  padding: 5px 10px; border: 1px solid color-mix(in srgb, var(--blue) 50%, transparent);
+  background: color-mix(in srgb, var(--blue) 18%, transparent); color: inherit; }
+.conv-qbtn:hover { background: color-mix(in srgb, var(--blue) 32%, transparent); }
+.conv-qbtn.quiet { border-color: color-mix(in srgb, var(--wash) 18%, transparent); background: color-mix(in srgb, var(--wash) 5%, transparent); font-weight: 500; }
+.conv-qbtn.quiet:hover { background: color-mix(in srgb, var(--wash) 12%, transparent); }
+
+.conv-run-menu { margin-left: auto; flex: none; background: color-mix(in srgb, var(--wash) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--wash) 14%, transparent); color: inherit; border-radius: 7px;
+  cursor: pointer; font-size: 0.85rem; padding: 2px 9px; line-height: 1.4; }
+.conv-run-menu:hover { background: color-mix(in srgb, var(--wash) 14%, transparent); }
+
+.conv-pop { position: absolute; z-index: 8; display: flex; flex-direction: column; min-width: 200px;
+  background: var(--s1); border: 1px solid color-mix(in srgb, var(--wash) 16%, transparent);
+  border-radius: 10px; padding: 5px; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5); }
+.conv-pop.hidden { display: none; }
+.conv-menu-item { text-align: left; background: none; border: none; color: inherit;
+  font: inherit; font-size: 0.82rem; padding: 8px 10px; border-radius: 7px; cursor: pointer; }
+.conv-menu-item:hover { background: color-mix(in srgb, var(--blue) 16%, transparent); }
+.conv-menu-item.on { background: color-mix(in srgb, var(--blue) 22%, transparent); font-weight: 600; }
+.conv-menu-item.danger { color: var(--crit); }
+.conv-menu-item.danger:hover { background: color-mix(in srgb, var(--crit) 16%, transparent); }
+
+.conv-addr { flex: none; align-self: flex-end; margin-bottom: 2px; font-size: 0.72rem; cursor: pointer;
+  border-radius: 999px; border: 1px solid color-mix(in srgb, var(--purple) 45%, transparent); color: var(--purple);
+  background: color-mix(in srgb, var(--purple) 10%, transparent); padding: 5px 10px; max-width: 130px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.conv-addr:hover { background: color-mix(in srgb, var(--purple) 22%, transparent); }
+
+.conv-fulldoc { position: fixed; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center;
+  background: rgba(0, 0, 0, 0.6); }
+.conv-fulldoc.hidden { display: none; }
+.conv-fulldoc-panel { display: flex; flex-direction: column; width: min(860px, 94%); height: 86%;
+  background: var(--bg-dark); border: 1px solid color-mix(in srgb, var(--wash) 12%, transparent); border-radius: 12px; overflow: hidden; }
+.conv-fulldoc-head { display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; border-bottom: 1px solid color-mix(in srgb, var(--wash) 8%, transparent); font-weight: 600; font-size: 0.9rem; }
+.conv-fulldoc-close { background: none; border: none; color: inherit; cursor: pointer; font-size: 1rem; opacity: 0.7; }
+.conv-fulldoc-close:hover { opacity: 1; }
+.conv-fulldoc-body { flex: 1; margin: 0; overflow: auto; padding: 12px 14px;
+  font-family: ui-monospace, monospace; font-size: 0.72rem; line-height: 1.5;
+  white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* Review composer (phase 3 Decide) */
+.conv-review-banner {
+  display: flex; align-items: center; gap: 10px;
+  background: color-mix(in srgb, var(--blue) 12%, transparent); border: 1px solid color-mix(in srgb, var(--blue) 35%, transparent);
+  border-radius: 10px; padding: 10px 14px; margin-bottom: 10px;
+}
+.conv-review-text { font-size: 0.85rem; line-height: 1.35; }
+.conv-review-sub { font-size: 0.72rem; opacity: 0.7; margin-top: 2px; }
+
+.conv-review-actions { margin-bottom: 10px; }
+.conv-review-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--blue); }
+.conv-review-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.conv-review-btn {
+  flex: 1; min-width: 140px; padding: 9px 14px; border-radius: 10px;
+  font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid transparent;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+}
+.conv-review-btn.approve {
+  background: color-mix(in srgb, var(--ok) 20%, transparent); border-color: color-mix(in srgb, var(--ok) 50%, transparent);
+  color: var(--ok);
+}
+.conv-review-btn.approve:hover { background: color-mix(in srgb, var(--ok) 32%, transparent); }
+.conv-review-btn.request-changes {
+  background: color-mix(in srgb, var(--gold) 18%, transparent); border-color: color-mix(in srgb, var(--gold) 45%, transparent);
+  color: var(--warn);
+}
+.conv-review-btn.request-changes:hover { background: color-mix(in srgb, var(--gold) 30%, transparent); }
+
+/* Properties (U8): the right pane (shell.css #props-body) holds these rows */
+.conv-props-body { padding: 12px 12px 24px; display: flex; flex-direction: column; gap: 12px; }
+.conv-props-toggle {
+  background: color-mix(in srgb, var(--wash) 6%, transparent); border: 1px solid color-mix(in srgb, var(--wash) 12%, transparent);
+  color: inherit; border-radius: 8px; padding: 4px 9px; font-size: 0.75rem; cursor: pointer;
+  margin-left: auto; flex: none;
+}
+.conv-props-toggle:hover { background: color-mix(in srgb, var(--wash) 12%, transparent); }
+.conv-visuals { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; }
+.conv-visuals .visual-img { max-height: 120px; }
+
+.conv-prop-row {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.conv-prop-label {
+  font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
+  opacity: 0.55;
+}
+.conv-prop-val {
+  font-size: 0.85rem; line-height: 1.4;
+}
+
+.conv-prop-pill {
+  display: inline-block; font-size: 0.72rem; font-weight: 600;
+  padding: 2px 8px; border-radius: 6px; text-transform: lowercase;
+  border: 1px solid color-mix(in srgb, var(--wash) 14%, transparent);
+}
+.conv-prop-pill.status-working, .conv-prop-pill.review-reviewing {
+  background: color-mix(in srgb, var(--blue) 15%, transparent); border-color: color-mix(in srgb, var(--blue) 40%, transparent); color: var(--blue);
+}
+.conv-prop-pill.status-review, .conv-prop-pill.review-review {
+  background: color-mix(in srgb, var(--gold) 15%, transparent); border-color: color-mix(in srgb, var(--gold) 40%, transparent); color: var(--warn);
+}
+.conv-prop-pill.status-waiting {
+  background: color-mix(in srgb, var(--purple) 15%, transparent); border-color: color-mix(in srgb, var(--purple) 40%, transparent); color: var(--purple);
+}
+.conv-prop-pill.status-done {
+  background: color-mix(in srgb, var(--ok) 15%, transparent); border-color: color-mix(in srgb, var(--ok) 40%, transparent); color: var(--ok);
+}
+.conv-prop-pill.risk-high {
+  background: color-mix(in srgb, var(--crit) 15%, transparent); border-color: color-mix(in srgb, var(--crit) 40%, transparent); color: var(--crit);
+}
+.conv-prop-pill.risk-medium {
+  background: color-mix(in srgb, var(--gold) 15%, transparent); border-color: color-mix(in srgb, var(--gold) 40%, transparent); color: var(--warn);
+}
+.conv-prop-pill.risk-low {
+  background: color-mix(in srgb, var(--ok) 15%, transparent); border-color: color-mix(in srgb, var(--ok) 40%, transparent); color: var(--ok);
+}
+
+.conv-prop-select {
+  width: 100%; padding: 6px 10px; border-radius: 8px;
+  background: rgba(0, 0, 0, 0.3); border: 1px solid color-mix(in srgb, var(--wash) 15%, transparent);
+  color: inherit; font: inherit; font-size: 0.85rem; cursor: pointer;
+}
+.conv-prop-select:focus { outline: none; border-color: var(--blue); }
+
+.conv-prop-wake-wrap { display: flex; flex-direction: column; gap: 6px; }
+.conv-prop-wake-time { font-size: 0.8rem; opacity: 0.85; font-family: ui-monospace, monospace; }
+.conv-prop-wake-btns { display: flex; gap: 6px; }
+.conv-prop-btn {
+  padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer;
+  background: color-mix(in srgb, var(--blue) 15%, transparent); border: 1px solid color-mix(in srgb, var(--blue) 40%, transparent); color: inherit;
+}
+.conv-prop-btn:hover { background: color-mix(in srgb, var(--blue) 28%, transparent); }
+.conv-prop-btn.wake-now { background: color-mix(in srgb, var(--ok) 18%, transparent); border-color: color-mix(in srgb, var(--ok) 45%, transparent); }
+.conv-prop-btn.wake-now:hover { background: color-mix(in srgb, var(--ok) 30%, transparent); }
+
+.conv-prop-link-item { font-size: 0.76rem; overflow-wrap: anywhere; margin-bottom: 3px; }
+.conv-prop-link-key { opacity: 0.55; }
+.conv-prop-link-val { font-family: ui-monospace, monospace; opacity: 0.9; }
+.conv-prop-link-a { color: var(--blue); text-decoration: none; border-bottom: 1px dotted color-mix(in srgb, var(--blue) 55%, transparent); overflow-wrap: anywhere; font-family: ui-monospace, monospace; }
+.conv-prop-link-a:hover { border-bottom-style: solid; }
+
+/* The properties toggle is for the phone stack; wide screens show the pane. */
+@media (min-width: 761px) { .conv-props-toggle { display: none; } }
+@media (max-width: 760px) { .conv-msg { max-width: 94%; } .conv-opts { grid-template-columns: 1fr 1fr; } }
+
+/* Phone width (rework 2026-09-25): the composer stacks instead of colliding —
+   addressee chip, note input and send button each take the full row, the
+   review decision buttons stack vertically, ask options go single-column. */
+@media (max-width: 520px) {
+  .conv-sendrow { flex-wrap: wrap; align-items: stretch; }
+  .conv-addr { order: -1; flex: 1 1 100%; max-width: none; align-self: flex-start; margin-bottom: 0; }
+  .conv-note { flex: 1 1 100%; min-width: 0; }
+  .conv-send { flex: 1 1 100%; width: 100%; }
+  .conv-review-btns { flex-direction: column; }
+  .conv-review-btn { width: 100%; flex: none; }
+  .conv-opts { grid-template-columns: 1fr; }
+  .conv-foot { padding: 10px 10px 10px; }
+  .conv-timeline { padding: 10px 10px 16px; }
+}
+
+/* ask.context (SC7, phase 4): the Human-First explanation paragraph under the
+   prompt and above the options, in both the live ask and historical asks.
+   Inherited colors only, so both themes render it without a per-theme sheet. */
+.conv-ask-ctx {
+  margin: 6px 0 8px; padding: 7px 10px;
+  border-left: 3px solid color-mix(in srgb, var(--gold) 60%, transparent);
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
+  border-radius: 0 8px 8px 0;
+}
+.conv-ask-ctx-label {
+  font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase;
+  opacity: 0.6; margin-bottom: 3px;
+}
+.conv-ask-ctx-body { font-size: 0.8rem; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* U5 run controls, visible in the thread */
+.conv-run-ctl { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 2px; }
+.conv-run-btn { font: inherit; font-size: 12px; padding: 4px 10px; border-radius: 6px; cursor: pointer;
+  background: var(--s1); color: var(--c92); border: 1px solid var(--hair); }
+.conv-run-btn.danger { border-color: color-mix(in srgb, var(--crit) 55%, transparent); }
+.conv-run-btn.danger[data-armed] { background: color-mix(in srgb, var(--crit) 18%, transparent); color: var(--crit); font-weight: 600; }
+.conv-run-btn.quiet { border-color: transparent; background: none; color: var(--c75); }
+.conv-run-btn:hover, .conv-run-btn:focus-visible { border-color: var(--c60); }
+
+/* a one-row composer: a long placeholder stays on its line (ellipsis) instead of wrapping out of the box */
+.conv-note::placeholder, .fd-note::placeholder { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Use the draft: a report's checked draft, and the one button that puts it where it goes. */
+.conv-draft { margin-top: 8px; border: 1px solid color-mix(in srgb, var(--wash) 14%, transparent); border-radius: 10px; overflow: hidden; }
+.conv-draft.live { border-color: color-mix(in srgb, var(--blue) 55%, transparent); }
+.conv-draft-head { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.02em; padding: 6px 10px; background: color-mix(in srgb, var(--wash) 6%, transparent); cursor: default; }
+.conv-draft.live > .conv-draft-head { background: color-mix(in srgb, var(--blue) 18%, transparent); }
+details.conv-draft-old > summary.conv-draft-head { cursor: pointer; opacity: 0.8; }
+.conv-draft-body { padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 8px; }
+.conv-draft-title { font-size: 0.9rem; font-weight: 700; overflow-wrap: anywhere; }
+.conv-draft-fields { display: grid; grid-template-columns: max-content 1fr; gap: 2px 10px; margin: 0; font-size: 0.8rem; }
+.conv-draft-fields dt { opacity: 0.65; }
+.conv-draft-fields dd { margin: 0; overflow-wrap: anywhere; }
+.conv-draft-text, .conv-draft-plan { margin: 0; padding: 8px 10px; border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere;
+  font: inherit; font-size: 0.88rem; line-height: 1.45; max-height: 22em; overflow: auto;
+  background: color-mix(in srgb, var(--wash) 5%, transparent); border: 1px solid color-mix(in srgb, var(--wash) 10%, transparent); }
+.conv-draft-plan { font-family: ui-monospace, monospace; font-size: 0.78rem; }
+.conv-draft-detail > summary { cursor: pointer; font-size: 0.78rem; opacity: 0.8; }
+.conv-draft-link { font-size: 0.8rem; }
+.conv-draft-use { align-self: stretch; min-height: 44px; padding: 8px 14px; border-radius: 10px; font: inherit; font-weight: 700; cursor: pointer;
+  color: inherit; background: color-mix(in srgb, var(--blue) 30%, transparent); border: 1px solid color-mix(in srgb, var(--blue) 65%, transparent); }
+.conv-draft-use:hover { background: color-mix(in srgb, var(--blue) 42%, transparent); }
+.conv-confirm-text { white-space: normal; }
+
+/* A run pane that leaves no room for a whole message: the timeline gives way to one row (conversation.js fitMessages). */
+.conv-timeline[hidden], .conv-runpane[hidden] { display: none; }
+.conv-squeeze { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 14px; font-size: 0.8rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--wash) 8%, transparent); }
+.conv-squeeze[hidden] { display: none; }
+.conv-squeeze-text { min-width: 0; opacity: 0.75; }
+.conv-squeeze-btn { flex: none; min-height: 40px; padding: 4px 12px; border-radius: 6px; cursor: pointer; font: inherit; font-size: 12px;
+  border: 1px solid color-mix(in srgb, var(--wash) 25%, transparent); background: none; color: inherit; }
+.conv-squeeze-btn:hover, .conv-squeeze-btn:focus-visible { border-color: var(--c60); }
+
+/* ==========================================================================
+   Helm conversation (Chart Room, "Needs you" screen). The decision sits with its context: a serif title and byline,
+   the report as a log (time gutter, nodes on a rule), then "Your call" with the options as a ruled list. Every legacy
+   class is kept (.conv-msg .conv-opt .conv-foot ...); this block restyles them. #view-conv carries the specificity.
+   ========================================================================== */
+#view-conv .conv-panel { background: var(--abyss); }
+#view-conv .conv-head { display: block; position: relative; padding: 18px 28px 8px; border: 0; background: none; }
+#view-conv .conv-head-main { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 16px; }
+#view-conv .conv-head-main > .conv-crumb, #view-conv .conv-head-main > .conv-title { flex: 1 0 100%; }
+#view-conv .conv-crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 0; color: var(--mute); font: 400 13.5px/1.4 var(--font-sans); }
+#view-conv .conv-crumb a { color: var(--mute); text-decoration: none; }
+#view-conv .conv-crumb a:hover { color: var(--ink); text-decoration: underline; }
+#view-conv .conv-crumb .sl { margin: 0 8px; color: var(--faint); }
+#view-conv .conv-title { margin: 6px 0 8px; font: 500 clamp(23px, 2.2vw, 29px)/1.2 var(--font-serif); letter-spacing: -.005em; color: var(--ink); text-wrap: balance; max-width: 30em; }
+#view-conv .conv-byline { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; color: var(--mute); font: 400 14px/1.4 var(--font-sans); }
+#view-conv .conv-byline:empty { display: none; }
+#view-conv .conv-byline .conv-urg { font-size: 13px; }
+#view-conv .conv-byline .conv-urg:not(.now) { background: none; border-color: var(--line-hi); color: var(--ink-2); }
+#view-conv .conv-sub { margin-top: 0; color: var(--faint); font-size: 12.5px; white-space: normal; opacity: 1; }
+#view-conv .conv-props-toggle { position: absolute; top: 18px; right: 16px; display: none; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border: 1px solid var(--line-hi); border-radius: 99px; background: var(--hull); color: var(--ink-2); font: 500 13.5px var(--font-sans); }
+#view-conv .conv-props-ico { width: 14px; height: 14px; border: 1.5px solid currentColor; border-radius: 50%; position: relative; }
+#view-conv .conv-props-ico::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: currentColor; }
+#view-conv .conv-banner { margin: 0 28px 8px; border: 1px solid color-mix(in srgb, var(--brass) 35%, transparent); border-radius: var(--r); background: color-mix(in srgb, var(--brass) 9%, transparent); color: var(--brass-hi); font-size: 14px; }
+
+/* the report, as a log */
+#view-conv .hm-log-entry > .hm-log-t { grid-column: 1; grid-row: 1; }
+#view-conv .hm-log-entry > .hm-log-nd { grid-column: 2; grid-row: 1; }
+#view-conv .hm-log-entry > .hm-log-bd { grid-column: 3; grid-row: 1; }
+#view-conv .conv-timeline { display: block; padding: 8px 28px 28px; scroll-padding-bottom: 20px; }
+#view-conv .conv-timeline > .hm-log-entry { grid-template-columns: 70px 30px minmax(0, 1fr); padding-bottom: 22px; max-width: 800px; }
+#view-conv .conv-timeline .hm-log-t { padding-right: 12px; font-size: 13.5px; line-height: 1.3; }
+#view-conv .conv-timeline .hm-log-bd { max-width: 66ch; padding-left: 10px; }
+#view-conv .conv-msg-who { margin: 0 0 4px; font: 600 13.5px/1.3 var(--font-sans); color: var(--mute); opacity: 1; }
+#view-conv .conv-msg.mine .conv-msg-who { color: var(--brass-hi); }
+#view-conv .conv-msg .conv-msg-body { font: 400 17px/1.65 var(--font-serif); color: var(--ink); white-space: pre-wrap; }
+#view-conv .conv-msg.mine .conv-msg-body { font-size: 18px; }
+#view-conv .conv-msg:not(.mine), #view-conv .conv-msg.mine { max-width: none; border: 0; background: none; border-radius: 0; padding: 0 0 22px; align-self: auto; }
+#view-conv .conv-msg.mine .hm-log-nd > i { border-color: var(--brass); color: var(--brass); }
+#view-conv .conv-msg-state { margin-top: 4px; font-size: 13px; }
+#view-conv .conv-msg-files { margin-top: 8px; }
+#view-conv .conv-msg-files .pv-open, #view-conv .conv-draft-link { min-height: 32px; padding: 3px 12px; border: 1px solid var(--line-hi); border-radius: 99px; background: var(--hull); color: var(--ink-2); font: 500 13.5px var(--font-sans); }
+#view-conv .conv-sys { display: grid; align-self: auto; padding-bottom: 12px; font-size: 14px; text-align: left; opacity: 1; gap: 0; max-width: 800px; }
+#view-conv .conv-sys .hm-log-t { color: var(--faint); font-size: 13px; }
+#view-conv .conv-sys .hm-log-nd > i { width: 9px; height: 9px; margin-top: 7px; border: 0; background: var(--line-3); }
+#view-conv .conv-sys .hm-log-nd > i svg { display: none; }
+#view-conv .conv-sys .conv-sys-text { color: var(--mute); font-size: 14px; line-height: 1.5; }
+#view-conv .conv-ask-ev { border: 0; padding: 0 0 22px; }
+#view-conv .conv-ask-ev-head { margin: 0 0 4px; font: 600 13.5px/1.3 var(--font-sans); color: var(--brass-hi); opacity: 1; }
+#view-conv .conv-ask-ev-prompt { font: 400 17px/1.6 var(--font-serif); color: var(--ink-2); }
+#view-conv .conv-empty { margin: 28px 0 0; padding: 0 0 0 0; opacity: 1; text-align: left; color: var(--mute); font-size: 15px; max-width: 800px; }
+#view-conv .conv-empty:has(+ .conv-storybox > *) { display: none; }
+#view-conv .conv-empty .conv-empty-t { display: block; margin-bottom: 2px; font: 500 20px/1.3 var(--font-serif); color: var(--ink-2); }
+
+/* Jump to latest: a quiet pill that rides above the composer */
+#view-conv .conv-jump { bottom: calc(var(--foot-h, 150px) + 14px); display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px 7px 12px; border: 1px solid var(--line-hi); background: var(--hull); color: var(--ink); font: 500 13.5px var(--font-sans); box-shadow: var(--shadow-lg); }
+#view-conv .conv-jump::before { content: ""; width: 7px; height: 7px; margin-top: -3px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); }
+
+/* Your call */
+#view-conv .conv-foot { padding: 14px 28px 12px; border-top: 1px solid color-mix(in srgb, var(--brass) 28%, var(--line)); background: color-mix(in srgb, var(--brass) 3.5%, var(--deck)); }
+#view-conv .conv-foot > * { max-width: 800px; }
+#view-conv .conv-live-ask { margin: 0 0 6px; }
+#view-conv .conv-story { margin: 0; }
+#view-conv .conv-storybox { display: block; }
+#view-conv .conv-ask-now.hm-log-entry { grid-template-columns: 70px 30px minmax(0, 1fr); padding-bottom: 8px; max-width: 800px; }
+#view-conv .conv-ask-now .hm-log-nd > i { border-color: var(--brass); color: var(--brass); box-shadow: 0 0 0 5px color-mix(in srgb, var(--brass) 14%, transparent); }
+#view-conv .conv-ask-now .conv-ask-ev-head { margin-bottom: 8px; }
+#view-conv .conv-ask-now .conv-live-prompt { font-size: 19px; }
+#view-conv .conv-catchup { gap: 6px 8px; margin: 0 0 12px; font-size: 13px; }
+#view-conv .conv-catchup .conv-cu-chip { padding: 0 10px; min-height: 24px; display: inline-flex; align-items: center; border: 1px solid var(--line-hi); border-radius: 99px; color: var(--ink-2); opacity: 1; }
+#view-conv .conv-catchup .conv-cu-chip.conv-cu-old { color: var(--brass-hi); border-color: color-mix(in srgb, var(--brass) 45%, transparent); font-weight: 500; }
+#view-conv .conv-catchup .conv-cu-chip.conv-cu-stale { color: var(--signal); border-color: color-mix(in srgb, var(--signal) 45%, transparent); font-weight: 500; }
+#view-conv .conv-catchup .conv-cu-chip.conv-cu-subject { color: var(--ink); font-weight: 500; }
+#view-conv .conv-recap { margin: 0 0 12px; }
+#view-conv .conv-recap-label { margin: 0 0 3px; color: var(--mute); font: 600 13.5px var(--font-sans); opacity: 1; }
+#view-conv .conv-recap-body { font: 400 17px/1.6 var(--font-serif); color: var(--ink); }
+#view-conv .conv-about { margin: 0 0 10px; font: 400 14.5px/1.55 var(--font-sans); color: var(--mute); opacity: 1; }
+#view-conv .conv-about .about-label { font-weight: 600; opacity: 1; }
+#view-conv .conv-about .about-more { color: var(--chart); opacity: 1; }
+#view-conv .conv-live-prompt { margin: 0 0 8px; font: 500 20px/1.4 var(--font-serif); color: var(--ink); text-wrap: pretty; }
+#view-conv .conv-live-ask.gate-kept .conv-live-prompt { color: var(--brass-hi); font-weight: 400; }
+#view-conv .conv-ask-ctx { margin: 8px 0 10px; padding: 2px 0 2px 14px; border-left: 2px solid color-mix(in srgb, var(--brass) 55%, transparent); border-radius: 0; background: none; }
+#view-conv .conv-ask-ctx-label { margin: 0 0 3px; color: var(--mute); font: 600 13.5px var(--font-sans); opacity: 1; }
+#view-conv .conv-ask-ctx-body { font: 400 15.5px/1.6 var(--font-sans); color: var(--ink-2); }
+#view-conv .conv-ask-ctx.fold > summary { color: var(--ink-2); }
+#view-conv .conv-yourcall { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 12px; margin-top: 2px; }
+#view-conv .conv-yourcall-t { margin: 0; font: 500 21px/1.25 var(--font-serif); color: var(--ink); }
+#view-conv .conv-yourcall-s { margin: 0; }
+#view-conv .conv-opts { display: block; margin: 8px 0 12px; border-top: 1px solid var(--line-hi); }
+#view-conv .conv-opts:has(> .conv-opt:only-child) { grid-template-columns: none; }
+#view-conv .conv-opt { position: relative; display: block; width: 100%; padding: 8px 10px 8px 38px; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: color-mix(in srgb, var(--brass) 7%, transparent); color: var(--ink); text-align: left; }
+#view-conv .conv-opt::before { content: ""; position: absolute; left: 10px; top: 11px; width: 18px; height: 18px; box-sizing: border-box; border: 1.5px solid var(--line-3); border-radius: 50%; background: var(--abyss); transition: border-color .15s, box-shadow .15s; }
+#view-conv .conv-opt:hover { background: color-mix(in srgb, var(--brass) 13%, transparent); }
+#view-conv .conv-opt:hover::before { border-color: var(--brass); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brass) 18%, transparent); }
+#view-conv .conv-opt .lbl { display: block; font: 600 17.5px/1.35 var(--font-serif); color: var(--ink); }
+#view-conv .conv-opt .eff { display: block; margin-top: 1px; font: 400 14px/1.45 var(--font-sans); color: var(--mute); opacity: 1; }
+#view-conv .conv-opt.opt-approve::before { border-color: var(--sea); }
+#view-conv .conv-opt.opt-deny::before { border-color: var(--signal); }
+#view-conv .conv-opt.opt-amend::before { border-color: var(--brass); }
+#view-conv .conv-opt.opt-approve, #view-conv .conv-opt.opt-deny, #view-conv .conv-opt.opt-amend { background: color-mix(in srgb, var(--brass) 7%, transparent); }
+/* "(Recommended)" reads as a brass mark; the words stay in the text */
+#view-conv .conv-rec { display: inline-block; margin-left: 6px; font-size: 0; vertical-align: .1em; }
+#view-conv .conv-rec::after { content: "\25C6  Recommended"; font: 600 13px/1 var(--font-sans); color: var(--brass-hi); letter-spacing: 0; }
+/* an option that settles the card: no fill, a dashed ring, "settles it" as a plain word. A working option is filled. */
+#view-conv .conv-opt.opt-terminal { background: transparent; border-style: solid; border-color: transparent transparent var(--line) transparent; }
+#view-conv .conv-opt.opt-terminal::before { border-style: dashed; border-color: var(--faint); background: transparent; }
+#view-conv .conv-opt.opt-terminal:hover { background: var(--hull); }
+#view-conv .conv-opt.opt-terminal .lbl { color: var(--ink-2); font-weight: 500; opacity: 1; }
+#view-conv .conv-opt .conv-opt-tag { display: inline-block; margin: 4px 0 0; padding: 0 8px; border: 1px dashed var(--line-3); border-radius: 99px; color: var(--mute); font: 500 12.5px/20px var(--font-sans); letter-spacing: 0; text-transform: none; opacity: 1; }
+
+#view-conv .conv-confirm { border-radius: var(--r); border: 1px solid color-mix(in srgb, var(--signal) 45%, transparent); background: color-mix(in srgb, var(--signal) 10%, transparent); }
+#view-conv .conv-confirm-text { font: 500 15px/1.45 var(--font-sans); }
+#view-conv .conv-sendrow { gap: 10px; align-items: flex-end; }
+#view-conv .conv-note { min-height: 48px; padding: 10px 14px; border: 1px solid var(--line-hi); border-radius: var(--r-lg); background: var(--abyss); color: var(--ink); font: 400 16px/1.5 var(--font-serif); max-height: 170px; }
+#view-conv .conv-note:focus { outline: none; border-color: var(--brass); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brass) 16%, transparent); }
+#view-conv .conv-note::placeholder { color: var(--faint); font-style: italic; }
+#view-conv .conv-attach { display: grid; place-items: center; width: 44px; height: 44px; margin: 0; padding: 0; border: 1px solid var(--line-hi); border-radius: var(--r); background: var(--hull); color: var(--ink-2); cursor: pointer; }
+#view-conv .conv-attach:hover { border-color: var(--line-3); color: var(--ink); }
+#view-conv .conv-send { min-height: 44px; padding: 0 18px; }
+#view-conv .conv-staged .staged-item { display: inline-flex; align-items: center; gap: 8px; padding: 3px 4px 3px 12px; border: 1px solid var(--line-hi); border-radius: 99px; background: var(--hull); font-size: 13.5px; }
+#view-conv .conv-staged .staged-x { min-height: 26px; padding: 0 10px; border: 0; border-radius: 99px; background: none; color: var(--mute); font: 500 13px var(--font-sans); }
+#view-conv .conv-foot-acts { gap: 6px 10px; margin-top: 10px; }
+#view-conv .conv-foot-acts .btn.quiet { padding: 4px 12px; font-size: 14px; }
+#view-conv .conv-foot-acts .snooze { margin-left: auto; gap: 8px; }
+#view-conv .conv-foot-acts .snooze-l { color: var(--mute); font-size: 14px; opacity: 1; text-transform: none; letter-spacing: 0; }
+#view-conv .conv-foot-acts .snooze-btn { min-width: 40px; padding: 3px 10px; border: 1px solid var(--line); border-radius: 99px; background: none; color: var(--ink-2); font-size: 13.5px; }
+#view-conv .conv-foot-acts .snooze-btn:hover { border-color: var(--line-3); background: var(--hull); color: var(--ink); }
+#view-conv .conv-hint:not(:empty) { margin-top: 6px; }
+#view-conv .conv-hint { margin-top: 8px; color: var(--mute); font-size: 13px; opacity: 1; }
+#view-conv .conv-squeeze { padding: 10px 28px; border-bottom: 1px solid var(--line); font-size: 14px; }
+#view-conv .conv-squeeze-btn { border-color: var(--line-hi); border-radius: 99px; color: var(--ink-2); font-size: 13.5px; }
+
+/* drafts a report carried */
+#view-conv .conv-draft { margin-top: 10px; border: 1px solid var(--line-hi); border-radius: var(--r-lg); background: var(--s1); }
+#view-conv .conv-draft.live { border-color: color-mix(in srgb, var(--brass) 55%, transparent); }
+#view-conv .conv-draft-head { padding: 8px 14px; background: var(--hull); color: var(--ink-2); font: 600 13.5px var(--font-sans); letter-spacing: 0; }
+#view-conv .conv-draft.live > .conv-draft-head { background: color-mix(in srgb, var(--brass) 16%, var(--hull)); color: var(--brass-hi); }
+#view-conv .conv-draft-title { font: 600 16px/1.35 var(--font-sans); }
+#view-conv .conv-draft-text { background: var(--abyss); border-color: var(--line); font: 400 15.5px/1.55 var(--font-serif); }
+#view-conv .conv-draft-use { border-radius: var(--r); border: 1px solid var(--brass); background: var(--brass); color: var(--brass-ink); }
+#view-conv .conv-draft-use:hover { background: var(--brass-hi); }
+
+/* the Connected pane's conversation groups */
+.conv-days .hm-meta, .conv-card-item .hm-meta { margin: 4px 0 0; }
+.conv-card-item.hm-conn-item { padding-top: 8px; }
+
+#view-conv .conv-state-pill { display: none; }
+
+/* the dock on a wide screen: each option's effect on its label's line, so the ask's words above keep their room */
+@media (min-width: 761px) {
+  #view-conv .conv-foot { padding-top: 10px; max-height: 50%; }
+  #view-conv .conv-opts { margin: 6px 0 10px; }
+  #view-conv .conv-opt { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 14px; padding: 6px 10px 6px 38px; }
+  #view-conv .conv-opt::before { top: 9px; }
+  #view-conv .conv-opt .lbl { font-size: 17px; }
+  #view-conv .conv-opt .eff { margin-top: 0; font-size: 13.5px; flex: 1 1 260px; min-width: 0; }
+  #view-conv .conv-opt .conv-opt-tag { margin-top: 0; }
+  #view-conv .conv-foot-acts { margin-top: 8px; }
+}
+
+@media (max-width: 760px) {
+  #view-conv .conv-props-toggle { display: inline-flex; }
+  #view-conv .conv-head { padding: 12px 16px 6px; }
+  #view-conv .conv-head-main > .conv-title { flex: 0 1 calc(100% - 136px); flex-basis: calc(100% - 136px); max-width: calc(100% - 136px); margin: 4px 0 6px; font-size: 22px; }
+  #view-conv .conv-sub { display: none; }
+  #view-conv .conv-state-pill { display: inline-flex; }
+  #view-conv .conv-byline { font-size: 13.5px; }
+  #view-conv .conv-timeline { padding: 6px 12px 18px; }
+  #view-conv .conv-timeline > .hm-log-entry, #view-conv .conv-ask-now.hm-log-entry { grid-template-columns: 62px 24px minmax(0, 1fr); }
+  #view-conv .conv-timeline .hm-log-t { white-space: nowrap; }
+  #view-conv .conv-timeline .hm-log-t { padding-right: 8px; font-size: 12.5px; }
+  #view-conv .conv-timeline .hm-log-t small { font-size: 12px; }
+  #view-conv .conv-timeline .hm-log-bd { padding-left: 6px; }
+  #view-conv .conv-msg .conv-msg-body, #view-conv .conv-ask-ev-prompt { font-size: 16.5px; }
+  #view-conv .conv-foot { padding: 10px 12px 8px; max-height: 56%; }
+  #view-conv .conv-yourcall-t { font-size: 19px; }
+  #view-conv .conv-yourcall-s { display: none; }
+  #view-conv .conv-opts { margin: 6px 0 10px; }
+  #view-conv .conv-opt { padding: 8px 8px 8px 36px; }
+  #view-conv .conv-opt::before { left: 8px; top: 11px; }
+  #view-conv .conv-opt .lbl { font-size: 17px; }
+  #view-conv .conv-opt .eff { font-size: 13.5px; }
+  #view-conv .conv-banner { margin: 0 12px 8px; }
+  #view-conv .conv-squeeze { padding: 10px 14px; }
+  #view-conv .conv-sendrow { flex-wrap: nowrap; gap: 8px; }
+  #view-conv .conv-send { flex: none; width: auto; padding: 0 12px; font-size: 14px; }
+  #view-conv .conv-foot-acts { margin-top: 6px; }
+  #view-conv .conv-foot-acts .snooze { margin-left: auto; flex-basis: auto; }
+}
+@media (max-width: 520px) {
+  #view-conv .conv-note { flex: 1 1 0; min-width: 0; }
+  #view-conv .conv-foot-acts .btn.quiet { padding: 4px 6px; }
+  #view-conv .conv-foot-acts .snooze-l { display: none; }
+  #view-conv .conv-opts { grid-template-columns: none; }
+}

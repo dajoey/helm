@@ -1,0 +1,5 @@
+# What the test suites need beyond the image's requirements.txt: the Playwright drives of the
+# screens (tests/test_screens_drive.py) and the screenshot rig (tools/screens/shoot.py).
+# Chromium comes from `playwright install --with-deps chromium` (CI) or PLAYWRIGHT_BROWSERS_PATH.
+-r requirements.txt
+playwright>=1.55

@@ -1,0 +1,25 @@
+# The redactor's own fixtures. tests/test_notebook_edit.py and tests/test_run_preview.py feed the
+# app's credential detector secret-shaped strings ON PURPOSE - an AKIA body, a JWT, an OAuth
+# token, the AWS documentation's example key - so the tests can show it catches them and that its
+# refusal never repeats the value. The values are allowlisted below; in this gitleaks version the
+# aws / jwt / oauth rules report a span that also carries the characters around the sample, which
+# no value pattern covers, so those two fixture files - and only those two - are named as well.
+# Every other path is still scanned; docs/SETUP.md tells a reader to run this same command.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "synthetic, non-functional secret-shaped samples the redactor's own tests feed it"
+regexes = [
+  '''AKIAAB...MNOP''',
+  '''abcdefgh12345678''',
+  '''AbCdEf0123456789xyzQWE''',
+  '''ya29.a...cdef''',
+  '''eyJhbG...rstu''',
+  '''wJalrXUtnFEMI/K7MDENG/bPxRfiCY''',
+  '''secret=Zr8kq3LmP0aa''',
+]
+paths = [
+  '''tests/test_notebook_edit.py''',
+  '''tests/test_run_preview.py''',
+]

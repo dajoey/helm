@@ -1,0 +1,18 @@
+# Build-context filter for deploy/Dockerfile (BuildKit picks up <Dockerfile>.dockerignore).
+.git
+.gitea
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.testdeps
+data
+runs
+*.db
+*.db-wal
+*.db-shm
+.env
+*.env
+.claude
+.github
+docs/screens
