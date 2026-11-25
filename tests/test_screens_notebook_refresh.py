@@ -13,7 +13,7 @@ threw, and the toast read "refresh failed".
 2. A refresh's day payload that lands after the user opened a note does not replace the note's view:
    the note is still drawn and no "refresh failed" toast shows.
 3. A refresh with nothing else going on still lands.
-Work site, synthetic data (tools/screens/fixture.py).
+Synthetic data (tools/screens/fixture.py).
 """
 from __future__ import annotations
 

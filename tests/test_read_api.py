@@ -1,4 +1,4 @@
-"""The read API and identity, at both sites.
+"""The read API and identity.
 
 Run: python3 tests/test_read_api.py
 

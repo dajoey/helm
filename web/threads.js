@@ -1,7 +1,7 @@
 /* THREADS: every thread this site has ever held, done ones included, as the second
    section of the left pane. Newest first, paged (100 rows a page, "more" appends the next),
    with the filters the route carries (#/threads?state=&from=&to=&who=&q=&gate=1&page=):
-   state chips (needs you, in flight, on hold, backlog on a second site, done, muted) with the facet
+   state chips (needs you, in flight, on hold, backlog, done, muted) with the facet
    counts, a date range on the last change, an agent or runner, and full-text search. A row
    opens its conversation in the middle pane (#/threads/<id>?…), the list staying beside it.
    Data: GET /api/triage/threads/index (helm.store.index_threads), light rows, no events. */

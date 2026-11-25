@@ -1,4 +1,4 @@
-"""Review 8d's follow-ups, closed (DECISIONS W11). Home profile, folder mode (the wiki bridge).
+"""Review 8d's follow-ups, closed (DECISIONS W11). Wiki profile, folder mode (the wiki bridge).
 
 - an append that created its note never answers an error after the create landed (a caller's retry
   would write the line twice), and append_daily neither;

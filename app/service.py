@@ -298,7 +298,7 @@ def _db():
 
 
 def _rej(exc):
-    # {ok:false, detail} is the superset of both old shapes: home clients read
+    # {ok:false, detail} is the superset of both older shapes: a browser client reads
     # `detail`; the pollers read `ok` too.
     body = {"ok": False, "detail": exc.detail}
     if getattr(exc, "extra", None):
@@ -332,10 +332,10 @@ def _actor_of(request) -> str | None:
     """Who is acting, as the web role forwards it (X-Helm-Actor, the Authentik login).
 
     A login is a person at one of the owner's own screens, and the only person is the owner:
-    the header maps to the actor "owner" at both sites (work's `by: "owner"`, which
-    a page injected for every tap). A bearer-only caller that sends
-    nothing gets the site's default (helm.store.normalize_by: owner at home, a chat
-    session on a second site). The login itself is kept for the access log only.
+    the header maps to the actor "owner" (what a page's `by: "owner"` stamp says). A
+    bearer-only caller that sends nothing gets the rule set's default
+    (helm.store.normalize_by: the owner, or a chat session under the session-default
+    rule). The login itself is kept for the access log only.
     """
     v = request.headers.get("x-helm-actor", "")
     return store.BY_OWNER if v.strip() else None
@@ -596,8 +596,7 @@ async def thread_get(request):
 
 
 async def thread_conversation(request):
-    """GET /api/triage/threads/{id}/conversation: the thread as one ordered timeline, `console: "none"` (helm/conversation.py). Both sites' conversations are this, through
-    the web role's /api/conversations/{id}."""
+    """GET /api/triage/threads/{id}/conversation: the thread as one ordered timeline, `console: "none"` (helm/conversation.py). The web role's /api/conversations/{id} serves the same thing."""
     con = _db()
     try:
         t = store.get_thread(con, request.path_params["thread_id"])
@@ -1500,7 +1499,7 @@ async def gave_up_restore(request):
     finally:
         con.close()
     if store.rules().restore_wraps:
-        # Work Helm's shape: {restored: [...]}; home clients read the bare list.
+        # The restore_wraps shape: {restored: [...]}; the default is the bare list.
         return JSONResponse({"restored": out}, status_code=202)
     return JSONResponse(out, status_code=202)
 

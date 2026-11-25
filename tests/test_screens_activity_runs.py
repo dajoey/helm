@@ -1,13 +1,13 @@
-"""Playwright drive of ACTIVITY's run blocks on a second site.
+"""Playwright drive of ACTIVITY's run blocks.
 
 Run: python3 tests/test_screens_activity_runs.py
 
-Old the earlier app showed the executor runs, what they cost, the threads that cost most and the
-dispatcher's log. The site is remote now and the client's the poller sends them on its
-heartbeat (tests/test_work_activity_runs.py covers the api). This drives a second site:
+The earlier app showed the executor runs, what they cost, the threads that cost most and the
+dispatcher's log; the dispatcher's client sends them on its heartbeat
+(tests/test_heartbeat_odd_bodies.py covers the heartbeat api). This drives the one deployment:
 before any run data arrives each block says the client has not sent it yet; after a
 heartbeat carrying runs and a log tail the four blocks show them, and a top thread opens
-its conversation. The home site has no such blocks (its dispatcher is the producer).
+its conversation.
 """
 from __future__ import annotations
 

@@ -1,5 +1,5 @@
 """Moving a non-note file (an image, a JSON snapshot, a .md.bak-* copy) through POST /api/notes/move,
-at the home profile in `folder` mode (what runs at home).
+at the wiki profile in `folder` mode (the default start).
 
 Why (2026-09-27): the notebook organizer retires a folder by moving its pages to Archive/ through
 POST /api/notes/move, but that route took only notes (a path ending in .md), so every image, state

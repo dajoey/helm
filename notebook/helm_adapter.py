@@ -76,9 +76,9 @@ def _with_con(con, fn):
 def stamp(actor) -> str:
     """Who an answer or close from the notebook is by. A forwarded web login is a
     person at one of the owner's own screens, and the only person is the owner, so any login
-    maps to "owner" at both sites (docs/DECISIONS.md #12; the API role's
-    `_actor_of` does the same). Home history then reads "owner" as every home
-    client expects; on a second site a session's answer stays a session's only when a
+    maps to "owner" (docs/DECISIONS.md #12; the API role's
+    `_actor_of` does the same). History then reads "owner" as every
+    client expects; a session's answer stays a session's only when a
     bearer caller says so in the body."""
     return "owner"
 

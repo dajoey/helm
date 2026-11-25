@@ -27,12 +27,6 @@ body { overflow: hidden; }
 .shell-brand { display: flex; align-items: center; gap: 8px; color: var(--c92); text-decoration: none; flex: none; }
 .shell-brand:hover { text-decoration: none; }
 .shell-name { font-weight: 800; font-size: 17px; letter-spacing: .08em; text-transform: uppercase; color: var(--cyan); }
-.shell-site {
-  font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-  padding: 2px 8px; border-radius: 999px; border: 1px solid var(--hair-light); color: var(--c60); background: var(--s1);
-}
-.shell-site.home { color: var(--blue); border-color: color-mix(in srgb, var(--blue) 45%, transparent); background: var(--blue-subtle); }
-.shell-site.work { color: var(--gold); border-color: color-mix(in srgb, var(--gold) 45%, transparent); background: var(--gold-subtle); }
 /* the HUD (the earlier inbox's emergency bar, now one strip): need you, on fire, coins, hearts */
 .shell-hud { display: flex; align-items: center; gap: 6px; flex: none; }
 .shell-hud .you, .shell-hud .fire { padding: 3px 9px; gap: 6px; }

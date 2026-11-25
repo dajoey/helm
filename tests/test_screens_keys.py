@@ -5,9 +5,9 @@ Run: python3 tests/test_screens_keys.py
 Every retained web key still does its job in the three-pane app (? help, / search,
 N file a card, E and C expand and collapse, F answers first, Ctrl+O the switcher, Ctrl+D
 today's note, Enter and Ctrl+Enter send, Ctrl/Cmd+Enter and Enter in the title file a new card
-on both sites); retired T is inert. A draft and a fold survive reloads, the mutating buttons carry
-the submit gate, a lit card takes attachments, and the fixed design draws. Home site (the new-card
-keys on both sites), synthetic data (tools/screens/fixture.py).
+on any screen); retired T is inert. A draft and a fold survive reloads, the mutating buttons carry
+the submit gate, a lit card takes attachments, and the fixed design draws. The one deployment (the
+new-card keys at both sizes), synthetic data (tools/screens/fixture.py).
 """
 from __future__ import annotations
 

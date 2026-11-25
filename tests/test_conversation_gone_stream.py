@@ -14,7 +14,7 @@ whole 55 s window, a 404 every read, and it logged an error for each.
    reading it again and again.
 3. A thread the api holds still streams its frame, and a stream still rides out an api that is
    down (502 on the first read is not "gone").
-Work site, synthetic data.
+Synthetic data.
 """
 from __future__ import annotations
 

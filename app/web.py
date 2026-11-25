@@ -17,12 +17,12 @@ Starlette + httpx around one shell: the api role holds the data and this role ho
   * Every `/att/*` answer (the file, or any refusal) leaves with `Content-Security-Policy:
     sandbox` and `X-Content-Type-Options: nosniff`, set here whatever the api role sent: an
     attachment opened in a tab runs no script and gets no origin, so a file from the wiki can
-    never act through this proxy. The api role also marks the active types for download at a
-    folder-readonly site (`app/notebook_api.py`); that `Content-Disposition` passes through.
+    never act through this proxy. The api role also marks the active types for download in a
+    folder-readonly mode (`app/notebook_api.py`); that `Content-Disposition` passes through.
     The file is relayed chunk by chunk, never held whole, and a HEAD goes upstream as HEAD.
   * No agent console: the home console's routes (`/api/board`, `/api/settings*`, `/api/frontdesk*`,
-    a conversation's `note`, `control`, `run-output` and `attachments`) are retired and 404 at
-    both sites, like any route outside the allowlist.
+    a conversation's `note`, `control`, `run-output` and `attachments`) are retired and 404,
+    like any route outside the allowlist.
 
 Producer/bot routes (`/result`, `PUT /threads`, `/dispatched`, `/pending-*`, `/claims`,
 `/suppressions`, `/lessons` ...) are deliberately unreachable from the browser: the page
@@ -39,7 +39,7 @@ Env (read once, at import):
                      unless the role binds to 127.0.0.1
   HELM_WEB_REQUIRE_AUTH_HEADER  1 (default) | 0
 
-Conversations are served at both sites from the api role's own
+Conversations are served from the api role's own
 `/api/triage/threads/<id>/conversation` (`helm/conversation.py`, `console: "none"`): the
 thread's state, ask and events are Helm's. The stream reads it every few seconds, sends a
 frame on change and closes after a minute (the browser's EventSource reconnects).

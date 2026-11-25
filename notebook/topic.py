@@ -1,9 +1,9 @@
 """The Topic hub: what the inbox holds about one note. the reference's app/topic.py.
 
 A thread is joined to a note either explicitly, by a `note:` link or a link
-whose path is the note's file, or (work profile only) by inference from
+whose path is the note's file, or (fixed profile only) by inference from
 names, in which case the match is marked suggested so a wrong guess is
-visible as one. The explicit join is checked for every note at both sites:
+visible as one. The explicit join is checked for every note in every profile:
 that is how a card and the page it cites find each other.
 """
 from __future__ import annotations
@@ -130,8 +130,8 @@ def linked(thread: dict, rel: str) -> bool:
 
 
 def match(thread: dict, keys: dict):
-    """('linked', why) or ('suggested', why) or None. Suggestions are the work
-    profile's heuristics; the home profile only ever joins on a link."""
+    """('linked', why) or ('suggested', why) or None. Suggestions are the fixed
+    profile's heuristics; the wiki profile only ever joins on a link."""
     if linked(thread, keys["rel"]):
         return ("linked", "links to this note")
     if not config.profile().heuristics:

@@ -22,3 +22,4 @@ The three-pane app at 999x1392 (a desktop window) and 412x915 (phone), rendered 
 | notebook-day | [png](home/notebook-day-999x1392.png) | [png](home/notebook-day-412x915.png) | The Day page: the daily note, the append box (store mode), the threads timeline, carry-over. |
 | notebook-note | [png](home/notebook-note-999x1392.png) | [png](home/notebook-note-412x915.png) | A note in the middle with its topic hub in the right pane (threads about it, backlinks, daily mentions). |
 | notebook-topic | [png](home/notebook-topic-999x1392.png) | [png](home/notebook-topic-412x915.png) | The topic hub as a page (#/topic/<rel>). |
+| activity-action | [png](home/activity-action-999x1392.png) | [png](home/activity-action-412x915.png) |  |

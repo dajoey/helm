@@ -6,11 +6,11 @@ render as disabled checkboxes. Everything else is markdown-it-py's CommonMark
 plus tables and strikethrough, with single newlines kept as line breaks the
 way Obsidian and the wiki engine show them.
 
-Raw HTML in a note: at the home profile (the the wiki engine wiki, written by many
+Raw HTML in a note: in the wiki profile (the wiki engine's folder, written by many
 agents and read in an origin whose web role proxies the API with the bearer
 injected) it is escaped and shown as text in every mode, read-only or writable,
-so a page can never run script in the Helm origin. At work it renders as the reference app
-rendered it (docs/DECISIONS.md H1, W1). The notebook's own markup (wikilinks,
+so a page can never run script in the Helm origin. In the fixed profile it renders as the
+reference app rendered it (docs/DECISIONS.md H1, W1). The notebook's own markup (wikilinks,
 embeds, checkboxes) is the same either way.
 """
 from __future__ import annotations
@@ -203,12 +203,12 @@ def make_md(raw_html: bool = True) -> MarkdownIt:
     return md
 
 
-_MD = make_md(raw_html=True)         # the work profile: the reference's rendering
-_MD_TEXT = make_md(raw_html=False)   # the home profile (the wiki, in any mode): raw HTML is text
+_MD = make_md(raw_html=True)         # the fixed profile: the reference's rendering
+_MD_TEXT = make_md(raw_html=False)   # the wiki profile (in any mode): raw HTML is text
 
 
 def render(body: str, resolver: Resolver | None = None) -> str:
-    """A note body as HTML. Raw HTML is escaped where the folder is untrusted (the home
-    profile, whatever the mode) and rendered on a second site (see the module docstring)."""
+    """A note body as HTML. Raw HTML is escaped where the folder is untrusted (the wiki
+    profile, whatever the mode) and rendered in the fixed profile (see the module docstring)."""
     md = _MD_TEXT if config.untrusted_folder() else _MD
     return md.render(body or "", {"resolver": resolver})

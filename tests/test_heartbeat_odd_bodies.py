@@ -49,8 +49,8 @@ def post(body):
 
 
 def runs():
-    """The runs the store kept (the home /api/status shape does not carry them;
-    the work shape, which did, was the second deployment's)."""
+    """The runs the store kept (/api/status carries them only under the
+    status_work_shape rule, which is off here)."""
     con = sqlite3.connect(os.environ["HELM_DB"])
     con.row_factory = sqlite3.Row
     try:

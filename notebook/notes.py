@@ -1618,8 +1618,8 @@ def outlinks(con, rel: str) -> list:
 
 
 def changed_between(con, start: float, end: float, limit: int = 200) -> list:
-    """Notes whose mtime falls in [start, end), newest first: the wiki pages that
-    changed that day (the home Day view), or on a second site the notes revised that day."""
+    """Notes whose mtime falls in [start, end), newest first: the pages changed
+    that day (the Day view's changed list)."""
     rows = con.execute(
         "SELECT rel, title, stem, folder, mtime, size FROM notes WHERE mtime >= ? AND mtime < ?"
         " ORDER BY mtime DESC LIMIT ?", (start, end, limit)).fetchall()
@@ -1812,8 +1812,8 @@ ATLAS_PER_HOST = 24
 
 
 def atlas(con, visible=lambda rel: True) -> list:
-    """Every note under Hosts/, with the Docker/APIs/Network pages that link to it. Home only
-    (the caller returns [] on a second site)."""
+    """Every note under Hosts/, with the Docker/APIs/Network pages that link to it. Wiki
+    profile only (the caller returns [] under the fixed profile)."""
     hosts = con.execute(
         "SELECT rel, title, mtime FROM notes WHERE folder = 'Hosts' OR (folder >= 'Hosts/' AND folder < 'Hosts0')"
         " ORDER BY rel").fetchall()

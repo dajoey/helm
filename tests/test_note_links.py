@@ -16,7 +16,7 @@ Run: PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers python3 tests/test_note_links.py
      path elsewhere, or no alias set, stays unmatched; the vault itself still maps.
   2. the store's join both ways: threads_citing finds a backslash link, and topic.match calls
      it linked.
-  3. drive, a second site with the alias set: /api/notes/meta names the aliases; on a deep link
+  3. drive, with the alias set: /api/notes/meta names the aliases; on a deep link
      whose properties draw before the folders arrive (the shell's meta is held back), the
      conversation's Links row becomes a link to the note once they do; a path elsewhere stays
      text; the link opens the note; and the note's topic hub lists the thread.
@@ -120,7 +120,7 @@ def api(site, path, body=None, method=None):
 
 
 def part_drive():
-    print("3. drive: a second site, the Links row and the topic hub")
+    print("3. drive: the alias, the Links row and the topic hub")
     if os.environ.get("HELM_SKIP_DRIVES") == "1":
         check("the Playwright drive ran (HELM_SKIP_DRIVES=1 set: skipped deliberately)", False)
         return

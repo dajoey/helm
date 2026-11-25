@@ -1,5 +1,5 @@
-"""Both sites install as apps: Helm at home, the reference app on a second site (2026-09-27, the owner: "Helm and the reference app
-need to be PWA-capable").
+"""Helm installs as an app (2026-09-27, the owner: "Helm and the reference app
+need to be PWA-capable"; the reference app was an earlier, separate deployment, retired since).
 
 Run: python3 tests/test_pwa.py   (from the repo root)
 
@@ -9,21 +9,21 @@ the manifest a page links WITHOUT cookies unless the link says crossorigin="use-
 the manifest came back as Authentik's redirect: Chrome's install check read "no manifest" on a
 first visit, and a later visit installed only when the service worker happened to hold a copy
 (live 2026-09-27: /manifest.webmanifest, /sw.js and the icons all 302 without the session).
-The work site also served the home manifest, so the two installed apps were both "Helm", and
-Helm's maskable icons were the reference's lever (web/icons/ was the old the reference app app's set): a phone
-launcher, which prefers the maskable icon, showed the lever for Helm.
+Back when the reference app still ran beside Helm, that deployment served Helm's manifest too,
+so the two installed apps were both "Helm", and Helm's maskable icons were the reference's
+lever (web/icons/ was the old app's set): a phone launcher, which prefers the maskable icon,
+showed the lever for Helm. The icon checks below keep that lesson.
 
-Proves, per site, in Chromium (the full build: the headless shell has no install check) behind a
+Proves, in Chromium (the full build: the headless shell has no install check) behind a
 fake forward_auth that passes only requests carrying the session cookie and sends the rest to a
 sign-in page on another origin, on a FIRST visit (the service worker blocked, so no cached copy
 can stand in for the manifest):
   - the manifest request carries the session, and the install check finds nothing missing;
-  - home installs as Helm and work as the reference app, each with its own name, description and icons;
+  - the app installs as Helm, with its own name, description and icons;
   - every icon is a PNG of its declared size, both purposes are present, the maskable ones are
     full-bleed (no transparent corner for a launcher's mask to show);
-  - the two apps share no icon file and no icon image;
-  - the head names the site's app (title, application-name, the iOS title, favicon, touch icon),
-    and the window title the page keeps ("(n) Helm") says the reference app on a second site.
+  - the head names the app (title, application-name, the iOS title, favicon, touch icon),
+    and the window title the page keeps ("(n) Helm") says Helm.
 """
 from __future__ import annotations
 

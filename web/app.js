@@ -5,8 +5,8 @@
    renderer and the toasts. What moved: the cards are gone — a thread is drawn once, as a row
    in a left-pane list (needsyou.js, threads.js) and as its conversation in the middle pane
    (conversation.js), where every affordance a card had now lives. Talks only to the
-   same-origin proxy (app/web.py). At work a tap is stamped `by: "owner"` (the work rule
-   pack's attribution).                                                                    */
+   same-origin proxy (app/web.py). A tap here is the owner's own and says so
+   (`by: "owner"`, the store's attribution).                                          */
 "use strict";
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -359,8 +359,8 @@ async function act(node, t, verb, body, okMsg, transform) {
   acting = true; if (node) node.classList.add("busy");
   try {
     if (transform) body = await transform(body);
-    // Work rule pack: `by` says who answered. A tap on this page is the owner's own; a missing
-    // value would read as a chat session on a second site (helm.store.normalize_by).
+    // Attribution: `by` says who answered. A tap on this page is the owner's own; under the
+    // session-default rule a missing value would read as a chat session (helm.store.normalize_by).
     if (isWork() && (verb === "reply" || verb === "close")) body = { ...body, by: "owner" };
     // A Use-the-draft press carries the header the web role requires of it: the confirm sheet sends it, a
     // forged cross-site request cannot (docs/API.md, Who can press).

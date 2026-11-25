@@ -1,6 +1,6 @@
 """One ordered event list per conversation.
 
-A thread's conversation is its Helm events, served the same way at both sites from the api
+A thread's conversation is its Helm events, served from the api
 role's `/api/triage/threads/<id>/conversation` and, through the web role, `/api/conversations/<id>`
 (with its stream). The payload is `thread_id`, `task_id`, `task_status`, `thread_state`, `events`,
 `pending_notes`, `ask`, `review_state`, `properties`, `generated_at`, plus `console: "none"`: no

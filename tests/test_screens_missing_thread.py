@@ -16,7 +16,7 @@ because the page asked again.
    route 404'd, only once the host was loaded). The counts are requests, not answers.
 2. R (a deliberate refresh) still asks the conversation feed again.
 3. A thread that exists is still re-read on every tick.
-Work site, synthetic data (tools/screens/fixture.py).
+Synthetic data (tools/screens/fixture.py).
 """
 from __future__ import annotations
 

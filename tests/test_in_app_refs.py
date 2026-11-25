@@ -12,12 +12,12 @@ hit as a link, and the THREAD row is the thread's own link.
 
 Run: PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers python3 tests/test_in_app_refs.py
 
-  1. the refs route on a second site: the minutes source names its note, a source and a link naming
+  1. the refs route: the minutes source names its note, a source and a link naming
      another thread name it, a note: link in another case names the note as held, and the
      thread itself, a case number, a bare string and a web address name nothing; 404 for an
      unknown thread; the web role serves it; the topic hub's card carries the same refs.
   2. the home fence: a page the home notebook does not serve (the wiki's work/) is never a ref.
-  3. drive, a second site: FROM links the minutes note and the other thread and shows a bare
+  3. drive: FROM links the minutes note and the other thread and shows a bare
      string source's text; Links links the other thread and the note as held; THREAD is the
      thread's own link; the FROM thread link opens that conversation; the note's topic hub card
      links its sources too.
@@ -96,7 +96,7 @@ def file_thread(site):
 
 
 def part_api(st):
-    print("1. the refs route on a second site")
+    print("1. the refs route")
     site = st.home
     code, out = file_thread(site)
     check("the thread is filed", code == 200 and out.get("created") == 1, (code, out))
@@ -155,7 +155,7 @@ def part_fence():
 
 
 def part_drive(st):
-    print("3. drive: a second site's properties")
+    print("3. drive: the properties pane's refs")
     if os.environ.get("HELM_SKIP_DRIVES") == "1":
         check("the Playwright drive ran (HELM_SKIP_DRIVES=1 set: skipped deliberately)", False)
         return

@@ -9,7 +9,7 @@ the real notebook module and the shipped static assets:
   2  Changed today groups the Helm writes by page with who wrote what; an edit outside Helm comes from the recent list;
      a site without the feed (404) says nothing, a failing one says so
   3  the shelves: a spine per folder from the graph, taller for more pages, Archive dashed, the folder list when there is no graph
-  4  the fleet atlas: a chart of hosts (the busiest few, then all), a list on a phone, none on a second site
+  4  the fleet atlas: a chart of hosts (the busiest few, then all), a list on a phone, none in the fixed profile
   5  in play: the notes live threads link to, with chips of what is open, and the same count in the rail
   6  today's page: journal lines, tick a box, the append box; read-only keeps all three out; the search field opens a finder
   7  a note: outline, at-a-glance line, pills, chips for wikilinks, latest entries only for an append-style page

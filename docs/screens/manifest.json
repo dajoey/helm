@@ -223,6 +223,22 @@
    "file": "home/notebook-topic-412x915.png",
    "errors": [],
    "notebook_stubbed": false
+  },
+  {
+   "site": "home",
+   "module": "activity-action",
+   "size": "999x1392",
+   "file": "home/activity-action-999x1392.png",
+   "errors": [],
+   "notebook_stubbed": false
+  },
+  {
+   "site": "home",
+   "module": "activity-action",
+   "size": "412x915",
+   "file": "home/activity-action-412x915.png",
+   "errors": [],
+   "notebook_stubbed": false
   }
  ],
  "skipped": []

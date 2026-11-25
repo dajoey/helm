@@ -13,7 +13,7 @@ were crushed to one fragment per line (Network/Caddy Routes, at any width).
    itself does not overflow sideways.
 3. A small key/value table is unchanged: fits, no scroll.
 4. Prose outside tables still wraps `anywhere` (the change is scoped to cells).
-Work site, synthetic data (tools/screens/fixture.py).
+Synthetic data (tools/screens/fixture.py).
 """
 from __future__ import annotations
 

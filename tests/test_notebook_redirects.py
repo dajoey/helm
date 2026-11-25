@@ -1,5 +1,5 @@
 """Moving a note keeps its old path working: POST /api/notes/move, the redirects table, and
-POST /api/notes/folder, at the home profile in `folder` mode (what runs at home).
+POST /api/notes/folder, in the wiki profile in `folder` mode (the default start).
 
 Why (2026-09-26): Helm showed the top-level `Dream Journal` folder as stale — its writer, the
 the assistant dream, died 08-12 — while the live nightly journal sat in `Memory/Dreams/`. the owner: the

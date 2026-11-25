@@ -14,7 +14,7 @@ pair). Every fix it needs existed except the removal. The contract it asked for:
     tell a missing note from a missing route (whose 404 is a bare "Not Found");
   - the answer is {rel, deleted: true}.
 
-Run against a store-mode work notebook with an export folder, over HTTP, the way the client
+Run against a store-mode notebook with an export folder, over HTTP, the way the client
 reaches it. DELETE /api/notes/note (the bridge's delete) keeps working as it did.
 """
 # temp-ok: the folders and DBs under test are fixtures this module creates and deletes

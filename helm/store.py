@@ -61,13 +61,14 @@ URGENCY_ORDER = {"now": 0, "this-week": 1, "whenever": 2}
 VALID_URGENCY = set(URGENCY_ORDER)
 # "backlog" (the earlier app, 2026-09-19) is what needs attention but not now: nothing is
 # pushing it, nobody owes an answer, and it comes back only when pulled back by hand.
-# Valid at both sites (one superset of states); list_threads hides it unless asked.
+# Valid under every rule set (one superset of states); list_threads hides it unless asked.
 VALID_STATE = {"needs-you", "working", "waiting-external", "backlog", "done"}
 VALID_ASK = {"none", "ack", "choice", "text"}
 
 # Who a close or an answer came from (the earlier app, 2026-09-24): the owner's own tap, or a chat
-# session acting on his word. At work only an explicit "owner" is the owner; at home a missing
-# actor is the owner, because every home client is one of his own screens.
+# session acting on his word. Under the session-default rule only an explicit "owner" is the
+# owner; under the owner default a missing actor is the owner, because every client is one of
+# the owner's own screens.
 BY_OWNER = _site.OWNER
 BY_SESSION = "session"
 # A bearer-only caller with no per-caller token (the site's shared HELM_APP_TOKEN).
@@ -1026,10 +1027,10 @@ def slug(s: str, maxlen: int = 40) -> str:
     return out.strip("-")[:maxlen].strip("-")
 
 
-# --- Terminal inference (work rule pack, 2026-09-21) ---------------------------------
+# --- Terminal inference (the infer_terminal rule, 2026-09-21) ---------------------------------
 # Producers keep omitting `terminal` on the option that means "do nothing", which sent
-# the thread to `working` and woke an executor with nothing to do. At work an unset
-# `terminal` is inferred from the label and effect; an explicit one is obeyed;
+# the thread to `working` and woke an executor with nothing to do. With infer_terminal on,
+# an unset `terminal` is inferred from the label and effect; an explicit one is obeyed;
 # `resolved` is never inferred.
 _NO_WORK_LABEL = ("leave it", "nothing", "no action", "no further", "close this out",
                   "close it out", "out of scope", "not a fault", "false alarm",
@@ -2185,19 +2186,19 @@ def unanswered_questions(con, thread_id):
 # '$' in Python also matches before a trailing newline.
 IDENT_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,127}\Z")
 IDENT_RULE = "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$"
-# Work Helm never checked its ids, so a work database carries ids like
-# 'call-1180', 'cc-2026-09-03-helm-...' and, in principle, dots and colons. At work
-# the id must only be safe as a path segment: no separator, no NUL, no leading dot.
-WORK_IDENT_RE = re.compile(r"[A-Za-z0-9][^/\\\x00-\x20\x7f]{0,199}\Z")
+# Databases written before the strict id rule carried ids like 'call-1180',
+# 'cc-2026-09-03-helm-...' and, in principle, dots and colons. With strict_ident off, the
+# id must only be safe as a path segment: no separator, no NUL, no leading dot.
+LEGACY_IDENT_RE = re.compile(r"[A-Za-z0-9][^/\\\x00-\x20\x7f]{0,199}\Z")
 MAX_IDENT_BYTES = 200   # a directory name under the attachment root; well under the 255 limit
 
 
 def ident_ok(ident: str) -> bool:
-    """Is this id safe to become a path segment, per the site's strictness?"""
+    """Is this id safe to become a path segment, per the rule set's strictness?"""
     if rules().strict_ident:
         return bool(IDENT_RE.match(ident or ""))
     s = ident or ""
-    return (bool(WORK_IDENT_RE.match(s)) and ".." not in s
+    return (bool(LEGACY_IDENT_RE.match(s)) and ".." not in s
             and len(s.encode("utf-8")) <= MAX_IDENT_BYTES)
 
 
@@ -2331,7 +2332,7 @@ def validate_thread(t):
     if rl.bare_ask_rules:
         errors.extend(bare_ask_errors(kind, ask_prompt, options, ask_context))
         errors.extend(one_decision_errors(kind, ask_prompt, options, ask_context))
-    # The context floor, producer's door (ledger GW-062). Both sites.
+    # The context floor, producer's door (ledger GW-062).
     if state == "needs-you":
         thin = thin_context_error(kind, ask_context)
         if thin and _thin_context_refuses("put", tid, thin):
@@ -4744,10 +4745,10 @@ def reply(con, thread_id, value, note="", attachments=None, by=None, source=None
     """
     row = _require_thread(con, thread_id)
     # A direct store call with no `by` is the owner's own tap (the earlier app's default too);
-    # the HTTP doors apply the site's default for a missing value before calling.
+    # the HTTP doors apply the rule set's default for a missing value before calling.
     by = BY_OWNER if by is None else normalize_by(by)
-    # The event source: home history always reads "owner" (no session concept there);
-    # on a second site a session's answer is written as the session's.
+    # The event source: under the owner default the history reads "owner"; under the
+    # session default a session's answer is written as the session's.
     src = source or (by if rules().by_default_session else BY_OWNER)
     via = "" if by == BY_OWNER else " from a chat session"
     if value is None or (isinstance(value, str) and not value.strip()):

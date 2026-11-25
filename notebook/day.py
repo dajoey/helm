@@ -14,8 +14,8 @@ structured sub-kind (a snooze, a mute, a reopen and a settle are all
 state-change from `owner`), so for those rows the reference's English-body parsing
 stays, as the fallback it was meant to be.
 
-At home the Day view is the thread timeline plus the wiki pages whose mtime
-falls on that day (`changed`); the work profile adds the day's call threads.
+In the wiki profile the Day view is the thread timeline plus the pages whose mtime
+falls on that day (`changed`); the fixed profile adds the day's call threads.
 """
 from __future__ import annotations
 
@@ -380,7 +380,7 @@ def build_timeline(hcon, start: float, end: float) -> list:
 
 
 def calls_of_day(hcon, start: float, end: float) -> list:
-    """The day's call threads with their recording links (work profile: the
+    """The day's call threads with their recording links (fixed profile: the
     "Calls" category). Empty where the profile has no such category."""
     prof = config.profile()
     if not prof.calls_category:

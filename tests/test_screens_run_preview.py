@@ -375,9 +375,9 @@ def run_site(browser, st, site, label, ctx_args=None):
 def main():
     with fixture.Stack(("home",)) as st, sync_playwright() as p:
         browser = p.chromium.launch(**shoot.launch_args())
-        run_site(browser, st, st.home, "work site (the reference app), 999x1392")
-        run_site(browser, st, st.home, "work site (the reference app), phone (Pixel 7 profile)", ctx_args=p.devices["Pixel 7"])
-        run_site(browser, st, st.home, "home site (Helm), 999x1392")
+        run_site(browser, st, st.home, "the run preview, wide (999x1392)")
+        run_site(browser, st, st.home, "the run preview, phone (Pixel 7 profile)", ctx_args=p.devices["Pixel 7"])
+        run_site(browser, st, st.home, "the run preview again, wide (999x1392)")
         browser.close()
     srv.shutdown()
     print(f"{passed} passed, {failed} failed")

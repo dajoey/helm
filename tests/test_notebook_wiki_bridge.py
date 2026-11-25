@@ -1,12 +1,12 @@
-"""The home wiki takes writes through Helm: `folder` mode at the home profile (the bridge).
+"""The wiki takes writes through Helm: `folder` mode in the wiki profile (the bridge).
 
 Projects/Wiki to Helm Notebook 2026-09, Phase 1 (the owner 2026-09-26: "Bridge now, flip later").
 Helm writes the same files the wiki engine serves, while the fleet's other writers (the bridge,
 out-of-band scripts over ssh, the wiki engine itself) keep writing them directly until they move.
 
 Covers:
-- the wiki stays untrusted input when home is writable: raw HTML escaped, active /att types
-  downloaded, keyed on the home profile and not on the read-only mode (PR #3 review H1/H5);
+- the wiki stays untrusted input when it is writable: raw HTML escaped, active /att types
+  downloaded, keyed on the wiki profile and not on the read-only mode (PR #3 review H1/H5);
 - a Helm write keeps the page's mode and owner, and a new page is not 0600, so the ssh
   appenders (user owner) can still append after Helm (running as root) rewrote a page;
 - POST /api/notes/append: O_APPEND, never read-modify-write, so an append racing direct
@@ -102,7 +102,7 @@ def run() -> int:
     # --- the mode and the untrusted folder --------------------------------------------------
     check("folder mode is writable", config.mode() == "folder" and not config.read_only()
           and config.profile().name == "wiki")
-    check("config.untrusted_folder() is true for the home profile whatever the mode",
+    check("config.untrusted_folder() is true for the wiki profile whatever the mode",
           hasattr(config, "untrusted_folder") and config.untrusted_folder() is True)
     r = client.get("/api/notes/note", params={"rel": "Docker/xss.md"})
     html = r.json().get("html", "") if r.status_code == 200 else ""

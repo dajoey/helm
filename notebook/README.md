@@ -1,34 +1,34 @@
 # notebook/
 
-the reference's notebook, ported into Helm as one module that serves both sites .
+The reference's notebook, ported into Helm as one module.
 The HTTP surface is `app/notebook_api.py`; the routes are listed in `docs/API.md`.
 
 ## Layout
 
 | File | What it is | the reference app source |
 |---|---|---|
-| `config.py` | The **profile** (`work` / `home`) and every path and mode from the environment | the constants in `notes.py:35-37`, `edit.py TEMPLATE_FOR`, `topic.py:14-16`, `day.py:13` |
+| `config.py` | The **profile** (`wiki` / `fixed`) and every path and mode from the environment | the constants in `notes.py:35-37`, `edit.py TEMPLATE_FOR`, `topic.py:14-16`, `day.py:13` |
 | `notes.py` | The note store and index: text, revisions, frontmatter, wikilinks, checkbox lines, FTS5; the full index and the mtime rescan | `app/notes.py` |
 | `edit.py` | Every write to a note and the rule on each; the 405 in read-only mode | `app/edit.py` |
 | `export.py` | The one-way export in store mode: write, verify, rebuild, adopt, quarantine, the periodic check | `app/export.py` |
 | `cutover.py` | The flip from folder-as-truth to store-as-truth (preflight, round trip, backup zip, flip) | `app/cutover.py` minus the git and Obsidian halves |
 | `render.py` | Markdown to HTML: wikilinks, embeds, checkboxes | `app/render.py` |
-| `day.py` | The Day view: daily note + thread timeline + pages changed that day (+ calls on a second site) | `app/day.py` |
+| `day.py` | The Day view: daily note + thread timeline + pages changed that day (+ calls in the fixed profile) | `app/day.py` |
 | `topic.py` | The Topic hub: threads about a note | `app/topic.py` |
 | `helm_adapter.py` | the reference's `helm_client.py` names, in-process over `helm.store` / `helm.actions` | `app/helm_client.py` |
-| `templates/` | Daily, Member, Build, Runbook (synthetic; work profile only) | the reference's `templates/` |
+| `templates/` | Daily, Member, Build, Runbook (synthetic; fixed profile only) | the reference's `templates/` |
 
 ## Environment
 
 | Variable | Meaning | Default |
 |---|---|---|
-| `HELM_NOTES_ROOT` | the folder: the reference's vault/export on a second site, the the wiki folder at home (mounted `:ro`) | unset = no folder (store mode only) |
-| `HELM_NOTES_DB` | `notes.db`: the store or the index cache (home) | `$HELM_DATA/notes.db` |
+| `HELM_NOTES_ROOT` | the folder of markdown notes (the wiki's own folder, or a vault export) | unset = no folder (store mode only) |
+| `HELM_NOTES_DB` | `notes.db`: the store or the index cache | `$HELM_DATA/notes.db` |
 | `HELM_DATA` | the data directory (quarantine, backups) | `data/` |
 | `HELM_DB` | the thread store the adapter opens | `$HELM_DATA/triage.db` |
-| `HELM_NOTES_MODE` | `store` \| `folder-readonly` \| `folder` | `helm.site.notes_mode()` (work `store`, home `folder-readonly`) |
-| `HELM_NOTES_PROFILE` | `work` \| `home` | `helm.site.site()` |
-| `HELM_NOTES_DAILY_ROOT` | where daily notes live | work `Daily`, home `Journal/Day` |
+| `HELM_NOTES_MODE` | `store` \| `folder-readonly` \| `folder` | `helm.site.notes_mode()` |
+| `HELM_NOTES_PROFILE` | `wiki` \| `fixed` | `notebook.config.profile()` (default `wiki`) |
+| `HELM_NOTES_DAILY_ROOT` | where daily notes live | `Daily` (fixed), `Journal/Day` (wiki) |
 | `HELM_NOTES_VERIFY_EVERY_S` | the export check's period (store mode) | `300` |
 
 ## Modes
@@ -101,9 +101,9 @@ any part is dot-prefixed (`.chrome-data/`, `.wiki-engine.auth.json`) or a skippe
 real path leaves the folder or lands on such a path, or when it is a regular file with more than one
 link (a hard link, which `realpath` cannot see); a file the pass cannot read is unseen. A row an older
 index holds for any of these is dropped on the next pass, and search, the switcher, list and completion
-skip it meanwhile. At a folder-readonly site raw HTML in a note renders as escaped text; the work store
-keeps the reference's rendering (`docs/DECISIONS.md` H1-H6). These key on the home profile
-(`config.untrusted_folder()`), not on the read-only mode, so they hold while home is writable (W1).
+skip it meanwhile. In the wiki profile raw HTML in a note renders as escaped text; the fixed
+profile keeps the reference's rendering (`docs/DECISIONS.md` H1-H6). These key on the profile
+(`config.untrusted_folder()`), not on the read-only mode, so they hold while the wiki is writable (W1).
 
 ## Threads and notes
 
@@ -120,7 +120,7 @@ reopen and a settle are all `state-change` from `owner`).
 |---|---|---|
 | `test_notebook_notes.py` | the importer: frontmatter, wikilinks, tasks, search, incremental update and delete, rendering | `test_notes.py`, 47/47 |
 | `test_notebook_edit.py` | every write rule (C2): save/409/credentials, templates, today's note, appends, toggles, rename with link rewriting, attachments, autocomplete; plus the read-only refusal | `test_edit.py`, 69/69 call sites |
-| `test_notebook_delete_route.py` | `POST /api/notes/delete` over HTTP at a store-mode work notebook: the removal with its reason in the history, 400 blank reason, 403 daily and dated-stream notes (under any path spelling), 404 with a JSON detail, the write-route and web-role checks | the `NOTE-DELETE-ROUTE.md` ask |
+| `test_notebook_delete_route.py` | `POST /api/notes/delete` over HTTP at a store-mode notebook: the removal with its reason in the history, 400 blank reason, 403 daily and dated-stream notes (under any path spelling), 404 with a JSON detail, the write-route and web-role checks | the `NOTE-DELETE-ROUTE.md` ask |
 | `test_notebook_store.py` | store mode: the cutover flip and round trip, export verify/rebuild policies, revisions behind every write, move; plus store mode with no folder | `test_store.py`, 70/101 (the 31 that drove the reference's `vault.py` / `write_block.py` are not ported) |
 | `test_notebook_day.py` | the Day timeline from a scratch thread store, the store readers, carry-over, assemble; plus the structured-field rows (C4) | `test_day.py`, 54/55 (the read-only-URI check has no meaning in-process) |
 | `test_notebook_adapter.py` | the adapter: list, every action's key filtering and the actor stamp, rejections as HelmError, `threads_citing` | `test_helm_client.py`, 24/33 (the HTTP-only checks: bearer, timeouts, dead Helm) |
@@ -129,4 +129,4 @@ reopen and a settle are all `state-change` from `owner`).
 | `test_notebook_redirects.py` | moves that keep old paths working (POST /api/notes/move, the `redirects` table): link, read and write of an old path, chains, a real note winning, rebuild, the write log under both paths; POST /api/notes/folder | new (the notebook organizer, 2026-09-26) |
 | `test_notebook_file_move.py` | non-note files (images, state files, .md.bak-* copies) moving through POST /api/notes/move: on disk and in the index, path embeds and /att/ of the old path via the redirect, links rewritten, pruning, refusals (a file never becomes a note) | new (the notebook organizer, 2026-09-27) |
 | `test_notebook_wiki_bridge.py` | the wiki bridge (W1-W7): escaping and /att by profile in folder mode, mode/owner kept, append racing direct appenders, recent, delete to Trash, the 409 on a moved file, symlinked folders refused, the write log | new |
-| `test_notebook_hardening.py` | the folder as untrusted input (review of PR #3): raw HTML escaped in the note and Day views at home and kept on a second site; symlinked notes, folders and `/proc/self/environ` never indexed or served by any read path (and dropped from an older index); dot-prefixed files and folders refused by name, through a link and from an older index; `/att` headers per type at the api and through the web role at both sites; the work export never adopting through a link | new |
+| `test_notebook_hardening.py` | the folder as untrusted input (review of PR #3): raw HTML escaped in the note and Day views in the wiki profile and rendered in the fixed profile; symlinked notes, folders and `/proc/self/environ` never indexed or served by any read path (and dropped from an older index); dot-prefixed files and folders refused by name, through a link and from an older index; `/att` headers per type at the api and through the web role in every profile; the export never adopting through a link | new |

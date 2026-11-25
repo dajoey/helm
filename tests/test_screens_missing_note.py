@@ -11,7 +11,7 @@ not there is not going to appear because the page asked again.
    more than the one time the open itself needed (it was one per tick, forever).
 2. R / the refresh button (a deliberate refresh) still asks again.
 3. A note that exists is still re-read on every tick.
-Work site, synthetic data (tools/screens/fixture.py).
+Synthetic data (tools/screens/fixture.py).
 """
 from __future__ import annotations
 

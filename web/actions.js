@@ -94,7 +94,7 @@ const HelmActions = (() => {
   // The runs that went quiet, as ACTIVITY last read them (/api/status quiet_runs).
   A.quiet = new Set();
 
-  // The actions that make sense for a Helm thread, by its state (ACTIVITY rows, both sites).
+  // The actions that make sense for a Helm thread, by its state (ACTIVITY rows).
   A.forThread = (t, sec) => {
     if (!t || !t.thread_id) return [];
     const tid = t.thread_id;

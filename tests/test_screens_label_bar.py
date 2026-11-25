@@ -14,7 +14,7 @@ pane before the first card. Every label stays; only how it is reached changes:
   * a card's label is quiet text beside its urgency badge, not a second box; a click on a wide
     screen filters by it, and on a phone a tap there opens the thread like any other tap.
 
-Both sites run on synthetic data (tools/screens/fixture.py) plus fourteen fictional labels.
+Synthetic data (tools/screens/fixture.py) plus fourteen fictional labels.
 """
 from __future__ import annotations
 
@@ -230,12 +230,12 @@ def main():
         check("and sets no filter", d.eval("state.categories.size") == 0)
         d.close()
 
-        print("\nthe same bar on a second site (999x1392)")
+        print("\nthe same bar again, wide (999x1392)")
         d = Drive(browser, st.home, WIDE, "#/needs-you")
         d.wait("#list-needs-you .lrow")
         d.page.wait_for_timeout(400)
         wl = bar_labels(d)
-        check("work's bar is capped too: three labels and LABELS", len(wl) == 3 and d.eval("!!document.querySelector('%s > .chip.more')" % BAR), wl)
+        check("the bar is capped here too: three labels and LABELS", len(wl) == 3 and d.eval("!!document.querySelector('%s > .chip.more')" % BAR), wl)
         d.close()
 
         print("\nthe fixed design draws the bar and the picker")

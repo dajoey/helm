@@ -416,15 +416,15 @@ def main():
             check(f"the old link {old} lands on {want}", h.startswith(want), h)
         check("no page errors", not d.errors, d.errors)
         d.close()
-        # writing on a done thread, both sites
+        # writing on a done thread
         d = Drive(browser, st.home, WIDE, "#/threads/t-digest-cron?state=done")
         d.wait(".conv-timeline .conv-msg")
-        check("work: a done thread's conversation shows its report", "Fixed" in d.eval("document.querySelector('.conv-timeline').textContent"))
+        check("a done thread's conversation shows its report", "Fixed" in d.eval("document.querySelector('.conv-timeline').textContent"))
         d.page.fill(".conv-note", "Also add a Monitor monitor for the cron leg")
         d.page.click(".conv-send")
         d.page.wait_for_timeout(1500)
         t = api(st.home, "/api/triage/threads/t-digest-cron")
-        check("work: writing on a done thread reopens it with the note", t["state"] == "needs-you" and any("Monitor monitor" in (e.get("body") or "") for e in t["events"]), t["state"])
+        check("writing on a done thread reopens it with the note", t["state"] == "needs-you" and any("Monitor monitor" in (e.get("body") or "") for e in t["events"]), t["state"])
         d.close()
         d = Drive(browser, st.home, WIDE, "#/threads/t-parks-retry?state=done")
         d.wait(".conv-timeline .conv-msg, .conv-timeline .conv-sys")
@@ -432,7 +432,7 @@ def main():
         d.page.click(".conv-send")
         d.page.wait_for_selector(".toast", timeout=10000)
         toast = d.eval("document.querySelector('.toast').textContent")
-        check("home: writing on a done thread is accepted", "didn't send" not in toast, toast)
+        check("writing on a done thread is accepted", "didn't send" not in toast, toast)
         t = api(st.home, "/api/triage/threads/t-parks-retry")
         check("home: ...and reopens it with the note, through Helm's own route", t["state"] == "needs-you"
               and any("parks pass again" in (e.get("body") or "") for e in t["events"]), t["state"])

@@ -50,8 +50,9 @@ def _actor_of(body: dict, actor):
 def strict_principals() -> set:
     """HELM_BEARER_STRICT_PRINCIPALS: comma-separated per-caller principals that get the
     strict rule even while HELM_BEARER_ACTOR_STRICT is off (e.g. `relay-mcp`, Relay,
-    which answers on the owner's word and must never read as the owner's own tap). At work only these
-    are strict (a named connector principal). One reader: helm.store.strict_principals."""
+    which answers on the owner's word and must never read as the owner's own tap). Under
+    the session-default rule only these are strict (a named connector principal). One
+    reader: helm.store.strict_principals."""
     return store.strict_principals()
 
 
@@ -93,9 +94,10 @@ def door_actor(explicit, login, caller):
 
 def strict_caller(login, caller) -> bool:
     """True when the strict rule applies to this request: a bearer-only caller (no signed-in
-    login) that is strict. At home that is bearer_strict (the switch or the list); on a second site only
-    a principal listed in HELM_BEARER_STRICT_PRINCIPALS, so every other work caller keeps the
-    work rule (only an explicit owner is the owner, anything else a session). The one test
+    login) that is strict. Under the owner default that is bearer_strict (the switch or the
+    list); under the session-default rule only a principal listed in
+    HELM_BEARER_STRICT_PRINCIPALS is strict, so every other caller keeps the session
+    default (only an explicit owner is the owner, anything else a session). The one test
     door_actor and door_source share."""
     if caller is None or login:
         return False
@@ -122,8 +124,9 @@ def act(con, thread_id: str, action: str, body: dict | None, actor=None, caller=
     if action not in ACTIONS:
         raise store.StoreError(404, "no such action: %s" % action)
     b = {k: body[k] for k in ACTIONS[action] if k in body}
-    # The HTTP door: a missing actor means the site's default (owner at home, a
-    # chat session on a second site), decided here so the store's own default stays the owner.
+    # The HTTP door: a missing actor means the rule set's default (the owner, or a
+    # chat session under the session-default rule), decided here so the store's own
+    # default stays the owner.
     given = door_actor(_actor_of(b, None), actor, caller)[0]
     who = store.normalize_by(given)
     if action == "reply":

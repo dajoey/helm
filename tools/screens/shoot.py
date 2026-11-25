@@ -6,7 +6,9 @@ synthetic data, into docs/screens/<module>-<WxH>.png.
 fixture.py brings the deployment up on loopback; each shot gets a fresh browser context with
 X-Forwarded-User set (the web role refuses without it), waits for network idle, and
 saves the PNG. Every shot uses the one fixed Helm design. Notebook shots are taken only when
-the notebook routes answer; otherwise they are listed as skipped.
+the notebook routes answer; otherwise they are listed as skipped. A shot scoped to a site
+this run does not shoot is listed as skipped too: a shot that does not render is never
+dropped in silence (the manifest's `skipped` list and the README's "Not rendered" carry it).
 """
 from __future__ import annotations
 
@@ -43,9 +45,10 @@ SHOTS = [
     ("notebook-day", "#/day", {"notebook": True, "wait": "#main .dayhead"}),
     ("notebook-note", "#/note/Contacts%2FPine%20Hollow%20portal.md", {"notebook": True, "wait": "#main .md"}),
     ("notebook-topic", "#/topic/Contacts%2FPine%20Hollow%20portal.md", {"notebook": True, "wait": "#main .ctx"}),
-    ("notebook-editor", "#/edit/Contacts%2FPine%20Hollow%20portal.md", {"notebook": True, "work": True, "wait": "#editor-host .cm-editor"}),
+    # (no editor shot: the editor is store-mode-only and the fixture's site is folder-readonly,
+    # so the front end cannot draw it here)
     # L7: an action done in place (the toast is the proof), repeatable at both sizes
-    ("activity-action", "#/activity", {"work": True, "ready": "#list-activity .lrow .act-btn[data-act=snooze]",
+    ("activity-action", "#/activity", {"ready": "#list-activity .lrow .act-btn[data-act=snooze]",
                                        "clicks": ["#list-activity .lrow .act-btn[data-act=snooze]", ".act-pop .act-pop-item >> nth=0"], "wait": ".toast"}),
 ]
 
@@ -90,9 +93,10 @@ def shoot(st, sites, only, out_dir):
             for mod, route, opt in SHOTS:
                 if only and mod not in only:
                     continue
-                if opt.get("home") and name != "home":
-                    continue
-                if opt.get("work") and name != "work":
+                # A shot scoped to a site this run does not shoot is recorded as skipped,
+                # never dropped in silence.
+                if (opt.get("home") and name != "home") or (opt.get("work") and name != "work"):
+                    skipped.append((name, mod, "scoped to a site this run does not shoot (%s)" % name))
                     continue
                 if opt.get("notebook") and not nb:
                     skipped.append((name, mod, "the notebook routes are not up at this site yet"))
@@ -215,7 +219,6 @@ MODULE_NOTE = {
     "notebook-day": "The Day page: the daily note, the append box (store mode), the threads timeline, carry-over.",
     "notebook-note": "A note in the middle with its topic hub in the right pane (threads about it, backlinks, daily mentions).",
     "notebook-topic": "The topic hub as a page (#/topic/<rel>).",
-    "notebook-editor": "The editor (CodeMirror, store mode only) with the frontmatter folded.",
 }
 
 

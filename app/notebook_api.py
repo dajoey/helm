@@ -371,7 +371,7 @@ async def get_topic(request):
 
 # /att: what a browser may do with a file from the notes folder. Every answer, the
 # file or a refusal, is sandboxed (an opened attachment runs no script and gets no
-# origin) and never sniffed, at both sites. At the home profile (the wiki, written by many
+# origin) and never sniffed. In the wiki profile (written by many
 # agents; in every mode, DECISIONS W1) a type a browser would run as a document of this origin is
 # downloaded, never shown: by the extension of the name asked for or of the file it
 # resolves to, or by the type either one guesses to. Images and the rest stay inline.
@@ -965,9 +965,9 @@ routes = [
 
 
 def write_routes() -> list:
-    """The routes that write the notebook (every one answers 405 at a read-only
-    site). The inbox writes are thread actions, not notebook writes, and stay
-    open at both sites."""
+    """The routes that write the notebook (every one answers 405 in a read-only
+    mode). The inbox writes are thread actions, not notebook writes, and stay
+    open in every mode."""
     return [r for r in routes if getattr(r.endpoint, "note_write", False)]
 
 

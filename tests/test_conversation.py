@@ -8,8 +8,8 @@ agent's reports are messages; state changes, claims and parks are system lines; 
 is its prompt line), keeps the live ask out of the timeline (the composer draws it: nothing
 drawn twice), adds a task's ## Progress and live run block when there is one, orders
 everything by time and drops duplicates: a note the owner wrote on the thread and the same note
-mirrored into the task's progress are one message. The api route serves the Helm side at
-both sites with `console: "none"`, 404 for an unknown thread.
+mirrored into the task's progress are one message. The api route serves the Helm side with
+`console: "none"`, 404 for an unknown thread.
 """
 from __future__ import annotations
 

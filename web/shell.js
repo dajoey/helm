@@ -1,5 +1,5 @@
-/* Helm shell — the three-pane conversation app, one page at both sites.
-   The top bar ("Helm", the site badge, the HUD, search, file a card, theme / sound / help)
+/* Helm shell — the three-pane conversation app, one page.
+   The top bar ("Helm", the HUD, search, file a card, theme / sound / help)
    and three panes under it: the left nav lists every section with its count and holds the
    open section's list; the middle pane is the conversation of the selected thread, or a
    section's page; the right pane is its properties. Routes are hashes owned here; the

@@ -5,7 +5,7 @@ Run: python3 tests/test_screens_body_links.py
 Old the earlier app auto-linked bare URLs, and the client executor's prompt relies on it ("Mentioning
 a URL in prose inside note still gets auto-linked"). Here renderBody (web/app.js) linked only
 markdown [label](url), so a bare address in a bot report was plain text to copy by hand. This
-drives both sites: a thread whose report and note carry bare addresses opens as its
+drives the app: a thread whose report and note carry bare addresses opens as its
 conversation, and each address is an <a target=_blank rel=noopener> with trailing sentence
 punctuation left outside it (an agent's note, a system line, links the same way); [label](url)
 still links, relative ones too; a javascript: (even split by a tab) or data: address, bare or in

@@ -139,7 +139,7 @@ check("long values are cut", all(len(str(last[k])) <= 300 for k in ("thread_id",
 
 # --- an unrouted path: the route label is the one bounded `/<unmatched>`, so the row itself must
 # say which path the caller asked for or nobody can name the caller's mistake after the container
-# is recreated (a second site's `GET /<unmatched> 404` card could not be diagnosed for that reason)
+# is recreated (an earlier deployment's `GET /<unmatched> 404` card could not be diagnosed for that reason)
 r = client.get("/api/some/route/nobody/serves?q=SECRET-QUERY-31c&x=1", headers={**AUTH, "User-Agent": "client-script/3"})
 got = rows("WHERE route='/<unmatched>' ORDER BY id DESC LIMIT 1")
 row = got[0] if isinstance(got, list) and got else {}

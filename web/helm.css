@@ -229,7 +229,7 @@ svg { display: block; }
 /* ---------- sentence case everywhere: the retired caps eyebrows read as ordinary labels ---------- */
 .fire-l, .you-l, .toggle-text, .chip, .empty, .sec, .waiting-on .label, .latest .who, .ask-context .label, .ask-howto .label,
 .snooze-l, .events li .ev-meta, .sheet .pick .label, .sent-files .label, .visuals-title, .conv-opt .conv-opt-tag, .conv-recap-label,
-.conv-foot-acts .snooze-l, .conv-prop-label, .conv-ask-ctx-label, .shell-name, .shell-site, .nav-sec, .lempty, .lgroup, .props-head,
+.conv-foot-acts .snooze-l, .conv-prop-label, .conv-ask-ctx-label, .shell-name, .nav-sec, .lempty, .lgroup, .props-head,
 .sw .r .kind, .help h4, .sres h3, .act-tile .l, .act-h, .act-quiet h3, .hx-drawer-title,
 :is(#view-notebook, #list-notebook, #pane-props) :is(.rsec, .tl h3, .calls h3, .carry h3, .ctx h3, .month, .sres h3),
 #view-notebook :is(.nb-stats dt, .nb-subhead, .nb-connection-stats dt, .nb-connection-columns h3, .nb-unresolved h3),
@@ -468,8 +468,6 @@ input, textarea, select { accent-color: var(--brass); }
 }
 .shell-mark { width: 20px; height: 20px; color: var(--brass); flex: none; }
 .shell-name { color: var(--brass); font: 600 17px/1 var(--font-serif); letter-spacing: .01em; }
-.shell-site { padding: 0; border: 0; border-radius: 0; background: none; color: var(--mute); font: 500 12px/1 var(--font-sans); }
-.shell-site.home, .shell-site.work { color: var(--mute); background: none; border: 0; }
 .shell-search { grid-column: 2; position: relative; flex: none; width: min(560px, 100%); max-width: none; margin: 0; }
 .shell-search input {
   width: 100%; height: 38px; padding: 0 54px 0 38px; border: 1px solid var(--line-hi); border-radius: 10px; background: var(--abyss); color: var(--ink);
@@ -725,7 +723,6 @@ body.props-empty .props-body::before { content: "Nothing connected yet."; paddin
   .shell-brand { flex-direction: row; align-self: center; gap: 8px; min-width: 0; padding: 0; background: none; border: 0; min-height: 44px; }
   .shell-mark { width: 26px; height: 26px; }
   .shell-name { font-size: 20px; }
-  .shell-site { display: none; }
   .shell-back { min-width: 40px; min-height: 40px; }
   .shell-hud { margin-left: auto; gap: 8px; }
   .shell-hud .fire, .shell-hud .runs { display: none; }

@@ -262,7 +262,7 @@ function confirmIfNeeded(el, a){
 }
 
 // The store's routes (the same ones the inbox uses), so the notebook's card never depends
-// on a second door. At work a tap here is the owner's own (`by: "owner"`, a rule pack).
+// on a second door. A tap here is the owner's own (`by: "owner"`, the store's attribution).
 const isWork = () => typeof window.Helm !== "undefined" && window.Helm.site === "work";
 const post = (id, action, body) => {
   if(isWork() && (action === "reply" || action === "close")) body = Object.assign({by: "owner"}, body);
