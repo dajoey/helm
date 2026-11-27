@@ -109,6 +109,16 @@ to the API role the same way.
   to the network. Run it from `deploy/`, so its `.env` and its `./notes` beside the file are the ones
   it reads.
 
+## How this was built
+
+Helm was designed, specified and accepted by its author and implemented by AI coding agents
+(Claude Code and others). Every change went through the same rails: a failing test first for each
+bug, CI on every change, and an independent AI review that is never the change's author before it
+merges. This repository is a public snapshot of a private development history, so it carries only a
+few commits.
+
+The Android client is not included here. On a phone, use the installable web app described above.
+
 ## Tests
 
 ```sh
@@ -133,3 +143,7 @@ on loopback, brought up from synthetic data by `tools/screens/fixture.py`.
 | `deploy/` | the image, the entrypoint and the production compose file |
 | `tools/screens/` | the synthetic-data fixture and the screenshot rig |
 | `tests/` | the suites, one file per area |
+
+## License
+
+MIT. See [LICENSE](LICENSE).
